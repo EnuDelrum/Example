@@ -1,9 +1,9 @@
-package com.example;
+package org.enudelrum;
 
 import net.runelite.client.RuneLite;
 import net.runelite.client.externalplugins.ExternalPluginManager;
 
-public class ExamplePluginTest
+public class EnuPluginTest
 {
 	public static void main(String[] args) throws Exception
 	{

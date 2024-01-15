@@ -1,4 +1,4 @@
-package com.example;
+package org.enudelrum;
 
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
@@ -9,7 +9,7 @@ public interface ExampleConfig extends Config
 {
 	@ConfigItem(
 		keyName = "greeting",
-		name = "Welcome Greeting",
+		name = "Enu's Welcome Greeting",
 		description = "The message to show to the user when they login"
 	)
 	default String greeting()
