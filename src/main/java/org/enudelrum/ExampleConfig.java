@@ -16,4 +16,26 @@ public interface ExampleConfig extends Config
 	{
 		return "Hello";
 	}
+
+	@ConfigItem(
+			keyName = "ItemSpawned",
+			name = "ItemSpawned",
+			description = "Output ItemSpawned"
+	)
+	default boolean ItemSpawned() { return false; }
+
+	@ConfigItem(
+			keyName = "PlayerLootReceived",
+			name = "PlayerLootReceived",
+			description = "Output PlayerLootReceived"
+	)
+	default boolean PlayerLootReceived() { return false; }
+
+	@ConfigItem(
+			keyName = "GameObjectSpawned",
+			name = "GameObjectSpawned",
+			description = "Output GameObjectSpawned"
+	)
+	default boolean GameObjectSpawned() { return false; }
+
 }
