@@ -1,29 +1,19 @@
 package org.enudelrum;
 
-import com.google.inject.Provides;
+import java.util.List;
 import javax.inject.Inject;
+import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
 import net.runelite.api.coords.LocalPoint;
+import net.runelite.api.events.ItemSpawned;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.ItemSpawned;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.PlayerLootReceived;
-import net.runelite.client.game.ItemStack;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.game.ItemManager;
-import org.lwjgl.system.linux.CMsghdr;
-//import net.runelite.client.plugins.grounditems.LootType;
-
-import java.awt.*;
-import java.time.Instant;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap; //Used for HashMap
-import java.util.List;
 
 @Slf4j
 @PluginDescriptor(
@@ -38,14 +28,12 @@ public class ExamplePlugin extends Plugin
 	@Inject
 	private ExampleConfig config;
 
-	//@Override
-	protected void startUp() throws Exception
+	protected void startUp()
 	{
 		System.out.println("Example started!");
 	}
 
-	//@Override
-	protected void shutDown() throws Exception
+	protected void shutDown()
 	{
 		System.out.println("Example stopped!");
 	}
@@ -53,13 +41,11 @@ public class ExamplePlugin extends Plugin
 	public void send(String category, String message) {
 		//This will send a message to the game chat.
 		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", category + ": " + message, null);
-		//System.out.println(AnyVar);
 	}
 
 	public void send(String category, int message) {
 		//This will send a message to the game chat.
-		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", category + ": " + String.valueOf(message), null);
-		//System.out.println(AnyVar);
+		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", category + ": " + message, null);
 	}
 
 	@Subscribe
@@ -169,10 +155,12 @@ public class ExamplePlugin extends Plugin
 			//client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "TEST item: " + item, null);
 			//Output: el@30137bef
 
-			send("item.getId", item.getId()); //int, gives the item ID
+			//int, gives the item ID
+			send("item.getId", item.getId());
 			//Output: 1779
 
-			send("item.getQuantity", item.getQuantity());  //int, seems to be 1 no matter if you drop multiple items or stackable items
+			//int, seems to be 1 no matter if you drop multiple items or stackable items
+			send("item.getQuantity", item.getQuantity());
 			//Output: 1
 
 			send("item.getModelHeight", item.getModelHeight());
@@ -184,16 +172,6 @@ public class ExamplePlugin extends Plugin
 			String itemString = itemSpawned.toString();
 			send("itemString", itemString);
 			//Output: ItemSpawned(tile=rl5@18cb9706, item=el@30137bef)
-
-			//USELESS: Compare to item objects to see if they're the same.
-			boolean itemEquals = itemSpawned.equals(item);
-			send("String.valueOf(itemEquals)", String.valueOf(itemEquals));
-			//Output: false
-
-			//USELESS: Get a hash of the item. This doesn't seem to be a HashMap or HashSet.
-			int itemHash = itemSpawned.hashCode();
-			send("String.valueOf(itemHash)", String.valueOf(itemHash));
-			//Output: 274391838
 
 			send("***ItemSpawned***", "END");
 		}
