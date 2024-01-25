@@ -178,36 +178,19 @@ public interface ExampleConfig extends Config
 	)
 	default boolean ItemContainerChanged() { return false; }
 
-	/*@ConfigItem(
-			keyName = "XXXTemplate",
-			name = "XXXTemplate",
-			description = "Output XXXTemplate"
+	@ConfigItem(
+			keyName = "ItemDespawned",
+			name = "ItemDespawned",
+			description = "Output ItemDespawned"
 	)
-	default boolean XXXTemplate() { return false; }*/
+	default boolean ItemDespawned() { return false; }
 
-	/*@ConfigItem(
-			keyName = "XXXTemplate",
-			name = "XXXTemplate",
-			description = "Output XXXTemplate"
+	@ConfigItem(
+			keyName = "ItemQuantityChanged",
+			name = "ItemQuantityChanged",
+			description = "Output ItemQuantityChanged"
 	)
-	default boolean XXXTemplate() { return false; }*/
-
-	/*@ConfigItem(
-			keyName = "XXXTemplate",
-			name = "XXXTemplate",
-			description = "Output XXXTemplate"
-	)
-	default boolean XXXTemplate() { return false; }*/
-
-	/*@ConfigItem(
-			keyName = "XXXTemplate",
-			name = "XXXTemplate",
-			description = "Output XXXTemplate"
-	)
-	default boolean XXXTemplate() { return false; }*/
-
-
-
+	default boolean ItemQuantityChanged() { return false; }
 
 	@ConfigItem(
 			keyName = "ItemSpawned",
@@ -215,6 +198,118 @@ public interface ExampleConfig extends Config
 			description = "Output ItemSpawned"
 	)
 	default boolean ItemSpawned() { return false; }
+
+	@ConfigItem(
+			keyName = "MenuEntryAdded",
+			name = "MenuEntryAdded",
+			description = "Output MenuEntryAdded"
+	)
+	default boolean MenuEntryAdded() { return false; }
+
+	@ConfigItem(
+			keyName = "MenuOpened",
+			name = "MenuOpened",
+			description = "Output MenuOpened"
+	)
+	default boolean MenuOpened() { return false; }
+
+	@ConfigItem(
+			keyName = "MenuOptionClicked",
+			name = "MenuOptionClicked",
+			description = "Output MenuOptionClicked"
+	)
+	default boolean MenuOptionClicked() { return false; }
+
+	@ConfigItem(
+			keyName = "MenuShouldLeftClick",
+			name = "MenuShouldLeftClick",
+			description = "Output MenuShouldLeftClick"
+	)
+	default boolean MenuShouldLeftClick() { return false; }
+
+	@ConfigItem(
+			keyName = "NameableNameChanged",
+			name = "NameableNameChanged",
+			description = "Output NameableNameChanged"
+	)
+	default boolean NameableNameChanged() { return false; }
+
+	@ConfigItem(
+			keyName = "NpcChanged",
+			name = "NpcChanged",
+			description = "Output NpcChanged"
+	)
+	default boolean NpcChanged() { return false; }
+
+	//SKIPPED: NpcDespawned
+
+	@ConfigItem(
+			keyName = "NpcSpawned",
+			name = "NpcSpawned",
+			description = "Output NpcSpawned"
+	)
+	default boolean NpcSpawned() { return false; }
+
+	/*@ConfigItem(
+			keyName = "XXXTemplate",
+			name = "XXXTemplate",
+			description = "Output XXXTemplate"
+	)
+	default boolean XXXTemplate() { return false; }*/
+
+	/*@ConfigItem(
+			keyName = "XXXTemplate",
+			name = "XXXTemplate",
+			description = "Output XXXTemplate"
+	)
+	default boolean XXXTemplate() { return false; }*/
+
+	/*@ConfigItem(
+			keyName = "XXXTemplate",
+			name = "XXXTemplate",
+			description = "Output XXXTemplate"
+	)
+	default boolean XXXTemplate() { return false; }*/
+
+	/*@ConfigItem(
+			keyName = "XXXTemplate",
+			name = "XXXTemplate",
+			description = "Output XXXTemplate"
+	)
+	default boolean XXXTemplate() { return false; }*/
+
+	/*@ConfigItem(
+			keyName = "XXXTemplate",
+			name = "XXXTemplate",
+			description = "Output XXXTemplate"
+	)
+	default boolean XXXTemplate() { return false; }*/
+
+	/*@ConfigItem(
+			keyName = "XXXTemplate",
+			name = "XXXTemplate",
+			description = "Output XXXTemplate"
+	)
+	default boolean XXXTemplate() { return false; }*/
+
+	/*@ConfigItem(
+			keyName = "XXXTemplate",
+			name = "XXXTemplate",
+			description = "Output XXXTemplate"
+	)
+	default boolean XXXTemplate() { return false; }*/
+
+	/*@ConfigItem(
+			keyName = "XXXTemplate",
+			name = "XXXTemplate",
+			description = "Output XXXTemplate"
+	)
+	default boolean XXXTemplate() { return false; }*/
+
+
+
+
+
 
 	@ConfigItem(
 			keyName = "PlayerLootReceived",

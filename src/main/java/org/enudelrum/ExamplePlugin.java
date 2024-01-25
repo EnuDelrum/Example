@@ -3,6 +3,7 @@ package org.enudelrum;
 import java.lang.reflect.Field;
 import java.util.List;
 import javax.inject.Inject;
+import javax.naming.Name;
 
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
@@ -46,6 +47,11 @@ public class ExamplePlugin extends Plugin
 	}
 
 	public void send(String category, int message) {
+		//This will send a message to the game chat.
+		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", category + ": " + message, null);
+	}
+
+	public void send(String category, short message) {
 		//This will send a message to the game chat.
 		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", category + ": " + message, null);
 	}
@@ -743,53 +749,48 @@ public class ExamplePlugin extends Plugin
 		}
 	}
 
-	/*@Subscribe
-	public void onXXXTemplate(XXXTemplate xxxTemplate) {
-		//Get XXXTemplate.
-		if (config.XXXTemplate()) {
-			send("***XXXTemplate***", "START");
+	@Subscribe
+	public void onItemDespawned(ItemDespawned itemDespawned) {
+		//Get ItemDespawned. This includes picking up an item from the ground.
+		if (config.ItemDespawned()) {
+			send("***ItemDespawned***", "START");
 
+			TileItem tileItem = itemDespawned.getItem();
+			send("tileItem.getId", tileItem.getId());
+			//Output: 1779
+
+			send("tileItem.getQuantity", tileItem.getQuantity());
+			//Output: 1
+
+			send("***ItemDespawned***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onItemQuantityChanged(ItemQuantityChanged itemQuantityChanged) {
+		//Get ItemQuantityChanged.
+		if (config.ItemQuantityChanged()) {
+			send("***ItemQuantityChanged***", "START");
+
+			send("itemQuantityChanged.toString", itemQuantityChanged.toString());
 			//Output:
 
-			send("***XXXTemplate***", "END");
-		}
-	}*/
-
-	/*@Subscribe
-	public void onXXXTemplate(XXXTemplate xxxTemplate) {
-		//Get XXXTemplate.
-		if (config.XXXTemplate()) {
-			send("***XXXTemplate***", "START");
-
+			send("itemQuantityChanged.getOldQuantity", itemQuantityChanged.getOldQuantity());
 			//Output:
 
-			send("***XXXTemplate***", "END");
-		}
-	}*/
-
-	/*@Subscribe
-	public void onXXXTemplate(XXXTemplate xxxTemplate) {
-		//Get XXXTemplate.
-		if (config.XXXTemplate()) {
-			send("***XXXTemplate***", "START");
-
+			send("itemQuantityChanged.getNewQuantity", itemQuantityChanged.getNewQuantity());
 			//Output:
 
-			send("***XXXTemplate***", "END");
-		}
-	}*/
-
-	/*@Subscribe
-	public void onXXXTemplate(XXXTemplate xxxTemplate) {
-		//Get XXXTemplate.
-		if (config.XXXTemplate()) {
-			send("***XXXTemplate***", "START");
-
+			TileItem tileItem = itemQuantityChanged.getItem();
+			send("tileItem.getId", tileItem.getId());
 			//Output:
 
-			send("***XXXTemplate***", "END");
+			send("tileItem.getQuantity", tileItem.getQuantity());
+			//Output:
+
+			send("***ItemQuantityChanged***", "END");
 		}
-	}*/
+	}
 
 	@Subscribe
 	public void onItemSpawned(ItemSpawned itemSpawned) {
@@ -912,6 +913,462 @@ public class ExamplePlugin extends Plugin
 			send("***ItemSpawned***", "END");
 		}
 	}
+
+	@Subscribe
+	public void onMenuEntryAdded(MenuEntryAdded menuEntryAdded) {
+		//Get MenuEntryAdded.
+		if (config.MenuEntryAdded()) {
+			send("***MenuEntryAdded***", "START");
+
+			send("menuEntryAdded.toString", menuEntryAdded.toString());
+			//Output: MenuEntryAdded(getOption=Walk here, getTarget=, getType=23, getIdentifier=0, getActionParam0=370, getActionParam1=916)
+
+			send("menuEntryAdded.getActionParam0", menuEntryAdded.getActionParam0());
+			//Output: 370
+
+			send("menuEntryAdded.getActionParam1", menuEntryAdded.getActionParam1());
+			//Output: 916
+
+			send("menuEntryAdded.getIdentifier", menuEntryAdded.getIdentifier());
+			//Output: 0
+
+			send("menuEntryAdded.getType", menuEntryAdded.getType());
+			//Output: 23
+
+			send("menuEntryAdded.getOption", menuEntryAdded.getOption());
+			//Output: Walk here
+
+			send("menuEntryAdded.getTarget", menuEntryAdded.getTarget());
+			//Output:
+
+			MenuEntry menuEntry = menuEntryAdded.getMenuEntry();
+			send("menuEntry.getIdentifier", menuEntry.getIdentifier());
+			//Output: 0
+
+			send("menuEntry.getItemId", menuEntry.getItemId());
+			//Output: -1
+
+			send("menuEntry.getItemOp", menuEntry.getItemOp());
+			//Output: -1
+
+			send("menuEntry.getOption", menuEntry.getOption());
+			//Output: Walk here
+
+			send("menuEntry.getParam0", menuEntry.getParam0());
+			//Output: 370
+
+			send("menuEntry.getParam1", menuEntry.getParam1());
+			//Output: 916
+
+			send("menuEntry.getTarget", menuEntry.getTarget());
+			//Output:
+
+			send("menuEntry.isDeprioritized", menuEntry.isDeprioritized());
+			//Output: false
+
+			send("menuEntry.isForceLeftClick", menuEntry.isForceLeftClick());
+			//Output: false
+
+			send("menuEntry.isItemOp", menuEntry.isItemOp());
+			//Output: false
+
+			MenuAction menuAction = menuEntry.getType();
+			send("menuAction.toString", menuAction.toString());
+			//Output: WALK
+
+			send("menuAction.getId", menuAction.getId());
+			//Output: 23
+
+			send("menuAction.name", menuAction.name());
+			//Output: WALK
+
+			send("***MenuEntryAdded***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onMenuOpened(MenuOpened menuOpened) {
+		//Get MenuOpened.
+		if (config.MenuOpened()) {
+			send("***MenuOpened***", "START");
+
+			send("menuOpened.toString", menuOpened.toString());
+			//Output: (THIS IS A VERY, VERY LONG STRING. IT INCLUDES EVERY MENU OPTION.)
+
+			MenuEntry menuFirstEntry = menuOpened.getFirstEntry();
+			send("menuEntry.getIdentifier", menuFirstEntry.getIdentifier());
+			//Output: 0
+
+			send("menuEntry.getItemId", menuFirstEntry.getItemId());
+			//Output: 1779
+
+			send("menuEntry.getItemOp", menuFirstEntry.getItemOp());
+			//Output: -1
+
+			send("menuEntry.getOption", menuFirstEntry.getOption());
+			//Output: Use
+
+			send("menuEntry.getParam0", menuFirstEntry.getParam0());
+			//Output: 9
+
+			send("menuEntry.getParam1", menuFirstEntry.getParam1());
+			//Output: 9764864
+
+			send("menuEntry.getTarget", menuFirstEntry.getTarget());
+			//Output: Flax
+
+			send("menuEntry.isDeprioritized", menuFirstEntry.isDeprioritized());
+			//Output: false
+
+			send("menuEntry.isForceLeftClick", menuFirstEntry.isForceLeftClick());
+			//Output: false
+
+			send("menuEntry.isItemOp", menuFirstEntry.isItemOp());
+			//Output: false
+
+			MenuAction menuAction = menuFirstEntry.getType();
+			send("menuAction.toString", menuAction.toString());
+			//Output: WIDGET_TARGET
+
+			send("menuAction.getId", menuAction.getId());
+			//Output: 25
+
+			send("menuAction.name", menuAction.name());
+			//Output: WIDGET_TARGET
+
+			MenuEntry[] menuEntries = menuOpened.getMenuEntries();
+			send("menuEntries.length", menuEntries.length);
+			//Output: 4
+
+			for (int i = 0; i < menuEntries.length; i++) {
+				send("menuEntries[" + i + "].getIdentifier", menuEntries[i].getIdentifier());
+				send("menuEntries[" + i + "].getParam0", menuEntries[i].getParam0());
+				send("menuEntries[" + i + "].getParam1", menuEntries[i].getParam1());
+			}
+			//Output: 10
+			//Output: 9
+			//Output: 9764864
+
+			send("***MenuOpened***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onMenuOptionClicked(MenuOptionClicked menuOptionClicked) {
+		//Get MenuOptionClicked.
+		if (config.MenuOptionClicked()) {
+			send("***MenuOptionClicked***", "START");
+
+			send("menuOptionClicked.toString", menuOptionClicked.toString());
+			//Output:
+
+			send("menuOptionClicked.getMenuOption", menuOptionClicked.getMenuOption());
+			//Output:
+
+			send("menuOptionClicked.getMenuTarget", menuOptionClicked.getMenuTarget());
+			//Output:
+
+			send("menuOptionClicked.getParam0", menuOptionClicked.getParam0());
+			//Output:
+
+			send("menuOptionClicked.getParam1", menuOptionClicked.getParam1());
+			//Output:
+
+			send("***MenuOptionClicked***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onMenuShouldLeftClick(MenuShouldLeftClick menuShouldLeftClick) {
+		//Get MenuShouldLeftClick.
+		if (config.MenuShouldLeftClick()) {
+			send("***MenuShouldLeftClick***", "START");
+
+			send("menuShouldLeftClick.toString", menuShouldLeftClick.toString());
+			//Output:
+
+			send("menuShouldLeftClick.isForceRightClick", menuShouldLeftClick.isForceRightClick());
+			//Output:
+
+			send("***MenuShouldLeftClick***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onNameableNameChanged(NameableNameChanged nameableNameChanged) {
+		//Get NameableNameChanged.
+		if (config.NameableNameChanged()) {
+			send("***NameableNameChanged***", "START");
+
+			send("nameableNameChanged.toString", nameableNameChanged.toString());
+			//Output:
+
+			Nameable nameable = nameableNameChanged.getNameable();
+			send("nameable.getName", nameable.getName());
+			//Output:
+
+			send("nameable.getPrevName", nameable.getPrevName());
+			//Output:
+
+			send("***NameableNameChanged***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onNpcChanged(NpcChanged npcChanged) {
+		//Get NpcChanged.
+		if (config.NpcChanged()) {
+			send("***NpcChanged***", "START");
+
+			send("npcChanged.toString", npcChanged.toString());
+			//Output:
+
+			NPC npc = npcChanged.getNpc();
+			send("npc.getName", npc.getName());
+			//Output:
+
+			send("npc.getIndex", npc.getIndex());
+			//Output:
+
+			send("npc.getId", npc.getId());
+			//Output:
+
+			send("npc.getCombatLevel", npc.getCombatLevel());
+			//Output:
+
+			NPCComposition npcComposition = npcChanged.getOld();
+			send("npcComposition.getName", npcComposition.getName());
+			//Output:
+
+			send("***NpcChanged***", "END");
+		}
+	}
+
+	//SKIPPED: NpcDespawned
+
+	@Subscribe
+	public void onNpcSpawned(NpcSpawned npcSpawned) {
+		//Get NpcSpawned.
+		if (config.NpcSpawned()) {
+			send("***NpcSpawned***", "START");
+
+			send("npcSpawned.toString", npcSpawned.toString());
+			//Output:
+
+			NPC npc = npcSpawned.getNpc();
+			send("npc.getName", npc.getName());
+			//Output:
+
+			send("npc.getIndex", npc.getIndex());
+			//Output:
+
+			send("npc.getId", npc.getId());
+			//Output:
+
+			send("npc.getCombatLevel", npc.getCombatLevel());
+			//Output:
+
+			NpcOverrides npcOverrides = npc.getChatheadOverrides();
+            if (npcOverrides != null) {
+                short[] colorToReplaceWith = npcOverrides.getColorToReplaceWith();
+				for (int i = 0; i < colorToReplaceWith.length; i++) {
+					send("colorToReplaceWith # " + i, colorToReplaceWith[i]);
+				}
+
+				int[] modelIds = npcOverrides.getModelIds();
+				for (int i = 0; i < modelIds.length; i++) {
+					send("modelIds # " + i, modelIds[i]);
+				}
+
+				short[] textureToReplaceWith = npcOverrides.getTextureToReplaceWith();
+				for (int i = 0; i < textureToReplaceWith.length; i++) {
+					send("textureToReplaceWith # " + i, textureToReplaceWith[i]);
+				}
+            }
+
+			NPCComposition npcComposition = npc.getComposition();
+			send("npcComposition.isVisible", npcComposition.isVisible());
+			//Output:
+
+			send("npcComposition.isMinimapVisible", npcComposition.isMinimapVisible());
+			//Output:
+
+			send("npcComposition.isInteractible", npcComposition.isInteractible());
+			//Output:
+
+			send("npcComposition.isFollower", npcComposition.isFollower());
+			//Output:
+
+			send("npcComposition.getWidthScale", npcComposition.getWidthScale());
+			//Output:
+
+			send("npcComposition.getSize", npcComposition.getSize());
+			//Output:
+
+			send("npcComposition.getName", npcComposition.getName());
+			//Output:
+
+			send("npcComposition.getId", npcComposition.getId());
+			//Output:
+
+			send("npcComposition.getHeightScale", npcComposition.getHeightScale());
+			//Output:
+
+			send("npcComposition.getCombatLevel", npcComposition.getCombatLevel());
+			//Output:
+
+			int[] models = npcComposition.getModels();
+			for (int i = 0; i < models.length; i++) {
+				send("configs # " + i, models[i]);
+			}
+
+			int[] configs = npcComposition.getConfigs();
+			for (int i = 0; i < configs.length; i++) {
+				send("configs # " + i, configs[i]);
+			}
+
+			short[] colorToReplaceWith = npcComposition.getColorToReplaceWith();
+			for (int i = 0; i < colorToReplaceWith.length; i++) {
+				send("colorsToReplaceWith # " + i, colorToReplaceWith[i]);
+			}
+
+			short[] colorToReplace = npcComposition.getColorToReplace();
+			for (int i = 0; i < colorToReplace.length; i++) {
+				send("colorsToReplace # " + i, colorToReplace[i]);
+			}
+
+			String[] actions = npcComposition.getActions();
+			for (int i = 0; i < actions.length; i++) {
+				send("actions # " + i, actions[i]);
+			}
+
+			//Actor actor =
+
+            send("***NpcSpawned***", "END");
+		}
+	}
+
+	/*@Subscribe
+	public void on(XXXTemplate xxxTemplate) {
+		//Get XXXTemplate.
+		if (config.XXXTemplate()) {
+			send("***XXXTemplate***", "START");
+
+			//Output:
+
+			send("***XXXTemplate***", "END");
+		}
+	}*/
+
+	/*@Subscribe
+	public void on(XXXTemplate xxxTemplate) {
+		//Get XXXTemplate.
+		if (config.XXXTemplate()) {
+			send("***XXXTemplate***", "START");
+
+			//Output:
+
+			send("***XXXTemplate***", "END");
+		}
+	}*/
+
+	/*@Subscribe
+	public void on(XXXTemplate xxxTemplate) {
+		//Get XXXTemplate.
+		if (config.XXXTemplate()) {
+			send("***XXXTemplate***", "START");
+
+			//Output:
+
+			send("***XXXTemplate***", "END");
+		}
+	}*/
+
+	/*@Subscribe
+	public void on(XXXTemplate xxxTemplate) {
+		//Get XXXTemplate.
+		if (config.XXXTemplate()) {
+			send("***XXXTemplate***", "START");
+
+			//Output:
+
+			send("***XXXTemplate***", "END");
+		}
+	}*/
+
+	/*@Subscribe
+	public void on(XXXTemplate xxxTemplate) {
+		//Get XXXTemplate.
+		if (config.XXXTemplate()) {
+			send("***XXXTemplate***", "START");
+
+			//Output:
+
+			send("***XXXTemplate***", "END");
+		}
+	}*/
+
+	/*@Subscribe
+	public void on(XXXTemplate xxxTemplate) {
+		//Get XXXTemplate.
+		if (config.XXXTemplate()) {
+			send("***XXXTemplate***", "START");
+
+			//Output:
+
+			send("***XXXTemplate***", "END");
+		}
+	}*/
+
+	/*@Subscribe
+	public void on(XXXTemplate xxxTemplate) {
+		//Get XXXTemplate.
+		if (config.XXXTemplate()) {
+			send("***XXXTemplate***", "START");
+
+			//Output:
+
+			send("***XXXTemplate***", "END");
+		}
+	}*/
+
+	/*@Subscribe
+	public void on(XXXTemplate xxxTemplate) {
+		//Get XXXTemplate.
+		if (config.XXXTemplate()) {
+			send("***XXXTemplate***", "START");
+
+			//Output:
+
+			send("***XXXTemplate***", "END");
+		}
+	}*/
+
+	/*@Subscribe
+	public void on(XXXTemplate xxxTemplate) {
+		//Get XXXTemplate.
+		if (config.XXXTemplate()) {
+			send("***XXXTemplate***", "START");
+
+			//Output:
+
+			send("***XXXTemplate***", "END");
+		}
+	}*/
+
+	/*@Subscribe
+	public void on(XXXTemplate xxxTemplate) {
+		//Get XXXTemplate.
+		if (config.XXXTemplate()) {
+			send("***XXXTemplate***", "START");
+
+			//Output:
+
+			send("***XXXTemplate***", "END");
+		}
+	}*/
+
+
 
 	@Subscribe
 	public void onPlayerLootReceived(PlayerLootReceived playerLootReceived) {
