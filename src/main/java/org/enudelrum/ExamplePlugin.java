@@ -1,5 +1,7 @@
 package org.enudelrum;
 
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
 import java.lang.reflect.Field;
 import java.util.List;
 import javax.inject.Inject;
@@ -8,19 +10,27 @@ import javax.naming.Name;
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.*;
+import net.runelite.api.Point;
 import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.coords.WorldArea;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.*;
+import net.runelite.api.kit.KitType;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
+import net.runelite.client.ui.PluginPanel;
+import net.runelite.client.ui.overlay.OverlayManager;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Enu's Example"
+	name = "Enu's Example",
+	description = "Enu Delrum's example plugin.",
+	tags = {"config", "menu"},
+	loadWhenOutdated = true,
+	enabledByDefault = true
 )
 
 public class ExamplePlugin extends Plugin
@@ -29,15 +39,32 @@ public class ExamplePlugin extends Plugin
 	private Client client;
 
 	@Inject
+	private OverlayManager overlayManager;
+
+	//@Inject
+	//private ExampleOverlay overlay;
+
+	@Inject
 	private ExampleConfig config;
 
-	protected void startUp()
+	@Provides
+	ExampleConfig provideConfig(ConfigManager configManager)
 	{
-		System.out.println("Example started!");
+		return configManager.getConfig(ExampleConfig.class);
 	}
 
-	protected void shutDown()
+	@Override
+	protected void startUp() throws Exception
 	{
+		System.out.println("Example started!");
+		//PluginPanel pluginPanel = new PluginPanel();
+		//overlayManager.add(overlay);
+	}
+
+	@Override
+	protected void shutDown() throws Exception
+	{
+		//overlayManager.remove(overlay);
 		System.out.println("Example stopped!");
 	}
 
@@ -47,6 +74,11 @@ public class ExamplePlugin extends Plugin
 	}
 
 	public void send(String category, int message) {
+		//This will send a message to the game chat.
+		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", category + ": " + message, null);
+	}
+
+	public void send(String category, double message) {
 		//This will send a message to the game chat.
 		client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", category + ": " + message, null);
 	}
@@ -318,10 +350,46 @@ public class ExamplePlugin extends Plugin
 	}
 
 	//The ChatMessage event caused RuneLite to lock up as soon as I enable it.
-	/*@Subscribe
+	@Subscribe
 	public void onChatMessage(ChatMessage chatMessage) {
-		//Get ChatMessage.
+		//Get ChatMessage. The output is printed to console instead of sending it to the chat box (or else RuneLite would go into a loop and crash).
 		if (config.ChatMessage()) {
+			System.out.println("***ChatMessage***" + "START");
+
+
+			System.out.println("chatMessage.getMessage: " + chatMessage.getMessage());
+			//Output: Test
+
+			System.out.println("chatMessage.getName: " + chatMessage.getName());
+			//Output: Enu Delrum
+
+			System.out.println("chatMessage.getSender: " + chatMessage.getSender());
+			//Output: null
+
+			System.out.println("chatMessage.getTimestamp: " + chatMessage.getTimestamp());
+			//Output: 1706594443
+
+			MessageNode messageNode = chatMessage.getMessageNode();
+			System.out.println("messageNode.getId: " + messageNode.getId());
+			//Output: 3
+
+			System.out.println("messageNode.getRuneLiteFormatMessage: " + messageNode.getRuneLiteFormatMessage());
+			//Output: null
+
+			System.out.println("messageNode.getValue: " + messageNode.getValue());
+			//Output: X
+
+			ChatMessageType chatMessageType = messageNode.getType();
+			System.out.println("chatMessage.getName: " + chatMessage.getName());
+			//Output: Enu Delrum
+
+			System.out.println("chatMessageType.toString: " + chatMessageType.toString());
+			//Output: PUBLICCHAT
+
+
+			System.out.println("***ChatMessage***" + "END");
+
+			/*
 			send("***ChatMessage***", "START");
 
 			send("chatMessage.getMessage", chatMessage.getMessage());
@@ -355,8 +423,9 @@ public class ExamplePlugin extends Plugin
 
 
 			send("***ChatMessage***", "END");
+			*/
 		}
-	}*/
+	}
 
 	//SKIPPED: ClanChannelChanged, ClanMemberJoined, ClanMemberLeft
 
@@ -710,7 +779,7 @@ public class ExamplePlugin extends Plugin
 			send("***ItemContainerChanged***", "START");
 
 			send("itemContainerChanged.toString", itemContainerChanged.toString());
-			//Output:
+			//Output: ItemContainerChanged(containerId=93, itemContainer=da@43c4b82a)
 
 			send("itemContainerChanged.getContainerId", itemContainerChanged.getContainerId());
 			//Output: 93
@@ -1060,19 +1129,19 @@ public class ExamplePlugin extends Plugin
 			send("***MenuOptionClicked***", "START");
 
 			send("menuOptionClicked.toString", menuOptionClicked.toString());
-			//Output:
+			//Output: MenuOptionClicked(getParam0=52, getParam1=55, getMenuOption=Collect, getMenuTarget=Grand Exchange booth, GetMenuAction=GAME_OBJECT_THIRD_OPTION, getId=10061)
 
 			send("menuOptionClicked.getMenuOption", menuOptionClicked.getMenuOption());
-			//Output:
+			//Output: Collect
 
 			send("menuOptionClicked.getMenuTarget", menuOptionClicked.getMenuTarget());
-			//Output:
+			//Output: Grand Exchange booth
 
 			send("menuOptionClicked.getParam0", menuOptionClicked.getParam0());
-			//Output:
+			//Output: 52
 
 			send("menuOptionClicked.getParam1", menuOptionClicked.getParam1());
-			//Output:
+			//Output: 55
 
 			send("***MenuOptionClicked***", "END");
 		}
@@ -1085,10 +1154,10 @@ public class ExamplePlugin extends Plugin
 			send("***MenuShouldLeftClick***", "START");
 
 			send("menuShouldLeftClick.toString", menuShouldLeftClick.toString());
-			//Output:
+			//Output: MenuShouldLeftClick(forceRightClick=false)
 
 			send("menuShouldLeftClick.isForceRightClick", menuShouldLeftClick.isForceRightClick());
-			//Output:
+			//Output: false
 
 			send("***MenuShouldLeftClick***", "END");
 		}
@@ -1101,14 +1170,14 @@ public class ExamplePlugin extends Plugin
 			send("***NameableNameChanged***", "START");
 
 			send("nameableNameChanged.toString", nameableNameChanged.toString());
-			//Output:
+			//Output: NameableNameChanged(nameable=rm@3bbe015c)
 
 			Nameable nameable = nameableNameChanged.getNameable();
 			send("nameable.getName", nameable.getName());
-			//Output:
+			//Output: Abu Delrum
 
 			send("nameable.getPrevName", nameable.getPrevName());
-			//Output:
+			//Output: null
 
 			send("***NameableNameChanged***", "END");
 		}
@@ -1153,20 +1222,20 @@ public class ExamplePlugin extends Plugin
 			send("***NpcSpawned***", "START");
 
 			send("npcSpawned.toString", npcSpawned.toString());
-			//Output:
+			//Output: NpcSpawned(npc=ds@2f54a9e8)
 
 			NPC npc = npcSpawned.getNpc();
 			send("npc.getName", npc.getName());
-			//Output:
+			//Output: Guard
 
 			send("npc.getIndex", npc.getIndex());
-			//Output:
+			//Output: 23768
 
 			send("npc.getId", npc.getId());
-			//Output:
+			//Output: 11911
 
 			send("npc.getCombatLevel", npc.getCombatLevel());
-			//Output:
+			//Output: 21
 
 			NpcOverrides npcOverrides = npc.getChatheadOverrides();
             if (npcOverrides != null) {
@@ -1185,212 +1254,1079 @@ public class ExamplePlugin extends Plugin
 					send("textureToReplaceWith # " + i, textureToReplaceWith[i]);
 				}
             }
+			//Output:
 
 			NPCComposition npcComposition = npc.getComposition();
 			send("npcComposition.isVisible", npcComposition.isVisible());
-			//Output:
+			//Output: false
 
 			send("npcComposition.isMinimapVisible", npcComposition.isMinimapVisible());
-			//Output:
+			//Output: true
 
 			send("npcComposition.isInteractible", npcComposition.isInteractible());
-			//Output:
+			//Output: true
 
 			send("npcComposition.isFollower", npcComposition.isFollower());
-			//Output:
+			//Output: false
 
 			send("npcComposition.getWidthScale", npcComposition.getWidthScale());
-			//Output:
+			//Output: 128
 
 			send("npcComposition.getSize", npcComposition.getSize());
-			//Output:
+			//Output: 1
 
 			send("npcComposition.getName", npcComposition.getName());
-			//Output:
+			//Output: Guard
 
 			send("npcComposition.getId", npcComposition.getId());
-			//Output:
+			//Output: 11911
 
 			send("npcComposition.getHeightScale", npcComposition.getHeightScale());
-			//Output:
+			//Output: 128
 
 			send("npcComposition.getCombatLevel", npcComposition.getCombatLevel());
-			//Output:
+			//Output: 21
 
 			int[] models = npcComposition.getModels();
-			for (int i = 0; i < models.length; i++) {
-				send("configs # " + i, models[i]);
+			if (models != null) {
+				for (int i = 0; i < models.length; i++) {
+					send("models # " + i, models[i]);
+				}
 			}
+			//Output: #0: 46760
+			//Output: #1: 46761
+			//Output: #2: 176
+			//Output: #3: 46762
+			//Output: #4: 219
+			//Output: #5: 4954
+			//Output: #6: 25684
+			//Output: #7: 246
+			//Output: #8: 518
+
 
 			int[] configs = npcComposition.getConfigs();
-			for (int i = 0; i < configs.length; i++) {
-				send("configs # " + i, configs[i]);
+			if (configs != null) {
+				for (int i = 0; i < configs.length; i++) {
+					send("configs # " + i, configs[i]);
+				}
 			}
+			//Output:
 
 			short[] colorToReplaceWith = npcComposition.getColorToReplaceWith();
-			for (int i = 0; i < colorToReplaceWith.length; i++) {
-				send("colorsToReplaceWith # " + i, colorToReplaceWith[i]);
+			if (colorToReplaceWith != null) {
+				for (int i = 0; i < colorToReplaceWith.length; i++) {
+					send("colorsToReplaceWith # " + i, colorToReplaceWith[i]);
+				}
 			}
+			//Output: #0: 24
 
 			short[] colorToReplace = npcComposition.getColorToReplace();
-			for (int i = 0; i < colorToReplace.length; i++) {
-				send("colorsToReplace # " + i, colorToReplace[i]);
+			if (colorToReplace != null) {
+				for (int i = 0; i < colorToReplace.length; i++) {
+					send("colorsToReplace # " + i, colorToReplace[i]);
+				}
 			}
+			//Output: #0: 8741
 
 			String[] actions = npcComposition.getActions();
 			for (int i = 0; i < actions.length; i++) {
 				send("actions # " + i, actions[i]);
 			}
+			//Output: #0: null
+			//Output: #1: Attack
+			//Output: #2: Pickpocket
+			//Output: #3: null
+			//Output: #4: null
 
-			//Actor actor =
+			Actor actor = npcSpawned.getActor();
+			send("actor.getName", actor.getName());
+			//Output: Guard
 
             send("***NpcSpawned***", "END");
 		}
 	}
 
-	/*@Subscribe
-	public void on(XXXTemplate xxxTemplate) {
-		//Get XXXTemplate.
-		if (config.XXXTemplate()) {
-			send("***XXXTemplate***", "START");
+	@Subscribe
+	public void onOverheadTextChanged(OverheadTextChanged overheadTextChanged) {
+		//Get OverheadTextChanged.
+		if (config.OverheadTextChanged()) {
+			send("***OverheadTextChanged***", "START");
 
-			//Output:
+			send("overheadTextChanged.toString", overheadTextChanged.toString());
+			//Output: OverheadTextChanged(actor=dn@19345bd4, overheadText: But it is dope)
 
-			send("***XXXTemplate***", "END");
+			send("overheadTextChanged.getOverheadText", overheadTextChanged.getOverheadText());
+			//Output: But it is dope
+
+			Actor actor = overheadTextChanged.getActor();
+			send("actor.getName", actor.getName());
+			//Output: Trip2Much
+
+			send("***OverheadTextChanged***", "END");
 		}
-	}*/
-
-	/*@Subscribe
-	public void on(XXXTemplate xxxTemplate) {
-		//Get XXXTemplate.
-		if (config.XXXTemplate()) {
-			send("***XXXTemplate***", "START");
-
-			//Output:
-
-			send("***XXXTemplate***", "END");
-		}
-	}*/
-
-	/*@Subscribe
-	public void on(XXXTemplate xxxTemplate) {
-		//Get XXXTemplate.
-		if (config.XXXTemplate()) {
-			send("***XXXTemplate***", "START");
-
-			//Output:
-
-			send("***XXXTemplate***", "END");
-		}
-	}*/
-
-	/*@Subscribe
-	public void on(XXXTemplate xxxTemplate) {
-		//Get XXXTemplate.
-		if (config.XXXTemplate()) {
-			send("***XXXTemplate***", "START");
-
-			//Output:
-
-			send("***XXXTemplate***", "END");
-		}
-	}*/
-
-	/*@Subscribe
-	public void on(XXXTemplate xxxTemplate) {
-		//Get XXXTemplate.
-		if (config.XXXTemplate()) {
-			send("***XXXTemplate***", "START");
-
-			//Output:
-
-			send("***XXXTemplate***", "END");
-		}
-	}*/
-
-	/*@Subscribe
-	public void on(XXXTemplate xxxTemplate) {
-		//Get XXXTemplate.
-		if (config.XXXTemplate()) {
-			send("***XXXTemplate***", "START");
-
-			//Output:
-
-			send("***XXXTemplate***", "END");
-		}
-	}*/
-
-	/*@Subscribe
-	public void on(XXXTemplate xxxTemplate) {
-		//Get XXXTemplate.
-		if (config.XXXTemplate()) {
-			send("***XXXTemplate***", "START");
-
-			//Output:
-
-			send("***XXXTemplate***", "END");
-		}
-	}*/
-
-	/*@Subscribe
-	public void on(XXXTemplate xxxTemplate) {
-		//Get XXXTemplate.
-		if (config.XXXTemplate()) {
-			send("***XXXTemplate***", "START");
-
-			//Output:
-
-			send("***XXXTemplate***", "END");
-		}
-	}*/
-
-	/*@Subscribe
-	public void on(XXXTemplate xxxTemplate) {
-		//Get XXXTemplate.
-		if (config.XXXTemplate()) {
-			send("***XXXTemplate***", "START");
-
-			//Output:
-
-			send("***XXXTemplate***", "END");
-		}
-	}*/
-
-	/*@Subscribe
-	public void on(XXXTemplate xxxTemplate) {
-		//Get XXXTemplate.
-		if (config.XXXTemplate()) {
-			send("***XXXTemplate***", "START");
-
-			//Output:
-
-			send("***XXXTemplate***", "END");
-		}
-	}*/
-
-
+	}
 
 	@Subscribe
-	public void onPlayerLootReceived(PlayerLootReceived playerLootReceived) {
-		//Get loot info from player in PVP.
-		if (config.PlayerLootReceived()) {
-			send("***PlayerLootReceived***", "START");
+	public void onPlayerChanged(PlayerChanged playerChanged) {
+		//Get PlayerChanged.
+		if (config.PlayerChanged()) {
+			send("***PlayerChanged***", "START");
 
-			//Get the name of the player?
-			Player player = playerLootReceived.getPlayer();
+			send("playerChanged.toString", playerChanged.toString());
+			//Output: PlayerChanged=dn@14854e8c)
+
+			Player player = playerChanged.getPlayer();
+
+			//Player extends Actor.
 			send("player.getName", player.getName());
-			//Output:
+			//Output: Enu Delrum
 
-			//Get the items dropped by the player. (Still working on this.)
-			//Collection<ItemStack> items = playerLootReceived.getItems();
+			send("player.isDead", player.isDead());
+			//Output: false
 
-			send("***PlayerLootReceived***", "END");
+			send("player.isInteracting", player.isInteracting());
+			//Output: false
+
+			//Back to Player methods.
+			send("player.getId", player.getId());
+			//Output: 608
+
+			send("player.getCombatLevel", player.getCombatLevel());
+			//Output: 126
+
+			send("player.getTeam", player.getTeam());
+			//Output: 0
+
+			send("player.isClanMember", player.isClanMember());
+			//Output: false
+
+			send("player.isFriend", player.isFriend());
+			//Output: false
+
+			send("player.isFriendsChatMember", player.isFriendsChatMember());
+			//Output: false
+
+			HeadIcon headIcon = playerChanged.getPlayer().getOverheadIcon();
+			if (headIcon != null) {
+				send("headIcon.name", headIcon.name());
+				//Output:
+
+				send("headIcon.toString", headIcon.toString());
+				//Output:
+			}
+
+			SkullIcon skullIcon = playerChanged.getPlayer().getSkullIcon();
+            if (skullIcon != null) {
+                send("skullIcon.toString", skullIcon.toString());
+				//Output:
+
+				send("skullIcon.toString", skullIcon.name());
+				//Output:
+            }
+
+			PlayerComposition playerComposition = playerChanged.getPlayer().getPlayerComposition();
+			send("playerComposition.getGender", playerComposition.getGender());
+			//Output: 0
+
+			//This doesn't seem to be useful. I'm not sure sure what these IDs are, but they're not item or model IDs.
+			int[] equipmentIds = playerComposition.getEquipmentIds();
+			for (int i = 0; i < equipmentIds.length; i++) {
+				send("equipmentIds # " + i, equipmentIds[i]);
+			}
+			//Output: #0: 10966
+			//Output: #1: 10272
+			//Output: #2: 23498
+			//Output: #3: 9353
+			//Output: #4: 10186
+			//Output: #5: 13343
+			//Output: #6: 0
+			//Output: #7: 10188
+			//Output: #8: 0
+			//Output: #9: 20509
+			//Output: #10: 23466
+			//Output: #11: 369
+
+			send("playerComposition.getKitId(KitType.WEAPON)", playerComposition.getKitId(KitType.WEAPON));
+			//Output: -1
+
+			send("playerComposition.getEquipmentId(KitType.WEAPON)", playerComposition.getEquipmentId(KitType.WEAPON));
+			//Output: 8841
+
+			int[] colors = playerComposition.getColors();
+			for (int i = 0; i < colors.length; i++) {
+				send("colors # " + i, colors[i]);
+			}
+			//Output: #0: 0
+			//Output: #1: 0
+			//Output: #2: 4
+			//Output: #3: 4
+			//Output: #4: 0
+
+			send("***PlayerChanged***", "END");
 		}
 	}
 
-	@Provides
-	ExampleConfig provideConfig(ConfigManager configManager)
-	{
-		return configManager.getConfig(ExampleConfig.class);
+	@Subscribe
+	public void onPlayerDespawned(PlayerDespawned playerDespawned) {
+		//Get PlayerDespawned. There's more examples in onPlayerChanged.
+		if (config.PlayerDespawned()) {
+			send("***PlayerDespawned***", "START");
+
+			Player player = playerDespawned.getPlayer();
+			send("player.getName", player.getName());
+			//Output: De Dog226
+
+			send("***PlayerDespawned***", "END");
+		}
 	}
+
+	@Subscribe
+	public void onPlayerMenuOptionsChanged(PlayerMenuOptionsChanged playerMenuOptionsChanged) {
+		//Get PlayerMenuOptionsChanged.
+		if (config.PlayerMenuOptionsChanged()) {
+			send("***PlayerMenuOptionsChanged***", "START");
+
+			send("playerMenuOptionsChanged.toString", playerMenuOptionsChanged.toString());
+			//Output: PlayerMenuOptionsChanged(index=1)
+
+			send("playerMenuOptionsChanged.getIndex", playerMenuOptionsChanged.getIndex());
+			//Output: 1
+
+			send("***PlayerMenuOptionsChanged***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onPlayerSpawned(PlayerSpawned playerSpawned) {
+		//Get PlayerSpawned. There's more examples in onPlayerChanged.
+		if (config.PlayerSpawned()) {
+			send("***PlayerSpawned***", "START");
+
+			Player player = playerSpawned.getPlayer();
+			send("player.getName", player.getName());
+			//Output: PKerNova
+
+			send("***PlayerSpawned***", "END");
+		}
+	}
+
+	//SKIPPED: PostAnimation, PostClientTick
+
+	@Subscribe
+	public void onPostHealthBar(PostHealthBar postHealthBar) {
+		//Get PostHealthBar. This only triggered the first time the healthbar was drawn.
+		if (config.PostHealthBar()) {
+			send("***PostHealthBar***", "START");
+
+			send("postHealthBar.toString", postHealthBar.toString());
+			//Output: PostHealthBar(healthBar=gd@cd21716)
+
+			HealthBar healthBar = postHealthBar.getHealthBar();
+			send("healthBar.getHealthBarFrontSpriteId", healthBar.getHealthBarFrontSpriteId());
+			//Output: 2176
+
+			//Set healthBar padding. This doesn't seem to do anything.
+			//healthBar.setPadding(25);
+
+			SpritePixels healthBarBack = healthBar.getHealthBarBackSprite();
+			send("healthBarBack.getWidth", healthBarBack.getWidth());
+			//Output: 30
+
+			SpritePixels healthBarFront = healthBar.getHealthBarFrontSprite();
+			send("healthBarFront.getWidth", healthBarFront.getWidth());
+			//Output: 30
+
+			send("***PostHealthBar***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onPostItemComposition(PostItemComposition postItemComposition) {
+		//Get PostItemComposition.
+		if (config.PostItemComposition()) {
+			send("***PostItemComposition***", "START");
+
+			send("postItemComposition.toString", postItemComposition.toString());
+			//Output: PostItemComposition(itemComposition=hp@29d84de4)
+
+			ItemComposition itemComposition = postItemComposition.getItemComposition();
+			send("itemComposition.getName", itemComposition.getName());
+			//Output: Burnt bread
+
+			//Add the ID after the name. The new name is keep after picking it up.
+			// Dropping an item doesn't trigger this event.
+			itemComposition.setName(itemComposition.getName() + " (" + itemComposition.getId() + ")");
+			//Item Name: Burnt bread (2311)
+
+			send("***PostItemComposition***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onPostMenuSort(PostMenuSort postMenuSort) {
+		//Get PostMenuSort.
+		if (config.PostMenuSort()) {
+			send("***PostMenuSort***", "START");
+
+			send("postMenuSort.toString", postMenuSort.toString());
+			//Output: net.runelite.api.events.PostMenuSort@6683c371
+
+			send("***PostMenuSort***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onPostObjectComposition(PostObjectComposition postObjectComposition) {
+		//Get PostObjectComposition. Trying to use this event almost always caused RuneLite to crash.
+		if (config.PostObjectComposition()) {
+			/*
+			send("***PostObjectComposition***", "START");
+
+			//send("postObjectComposition.toString", postObjectComposition.toString());
+			//Output:
+
+			ObjectComposition objectComposition = postObjectComposition.getObjectComposition();
+			send("objectComposition.getId", objectComposition.getId());
+			//Output:
+
+			send("objectComposition.getMapIconId", objectComposition.getMapIconId());
+			//Output:
+
+			send("objectComposition.getMapIconId", objectComposition.getMapIconId());
+			//Output:
+
+			send("objectComposition.getMapSceneId", objectComposition.getMapSceneId());
+			//Output:
+
+			send("objectComposition.getName", objectComposition.getName());
+			//Output:
+
+			send("objectComposition.getVarbitId", objectComposition.getVarbitId());
+			//Output:
+
+			send("objectComposition.getVarPlayerId", objectComposition.getVarPlayerId());
+			//Output:
+
+			String[] actions = objectComposition.getActions();
+			if (actions != null) {
+				for (int i = 0; i < actions.length; i++) {
+					send("actions # " + i, actions[i]);
+				}
+			}
+			//Output:
+
+			int[] impostorIds = objectComposition.getImpostorIds();
+			if (impostorIds != null) {
+				for (int i = 0; i < impostorIds.length; i++) {
+					send("impostorIds # " + i, impostorIds[i]);
+				}
+			}
+			//Output:
+
+			send("***PostObjectComposition***", "END");
+			*/
+		}
+	}
+
+	@Subscribe
+	public void onPostStructComposition(PostStructComposition postStructComposition) {
+		//Get PostStructComposition.
+		if (config.PostStructComposition()) {
+			send("***PostStructComposition***", "START");
+
+			send("postStructComposition.toString", postStructComposition.toString());
+			//Output: PostStructComposition(structComposition=hi@5a15dfb4)
+
+			StructComposition structComposition = postStructComposition.getStructComposition();
+			send("structComposition.getId", structComposition.getId());
+			//Output: 3773
+
+			send("structComposition.toString", structComposition.toString());
+			//Output: hi@5a15dfb4
+
+			send("***PostStructComposition***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onProjectileMoved(ProjectileMoved projectileMoved) {
+		//Get ProjectileMoved.
+		if (config.ProjectileMoved()) {
+			send("***ProjectileMoved***", "START");
+
+			send("projectileMoved.toString", projectileMoved.toString());
+			//Output: ProjectileMoved(projectile=cx@2513e3ad, position=LocalPoint(x=5864, y=5864), z=-401
+
+			send("projectileMoved.getZ", projectileMoved.getZ());
+			//Output: -401
+
+			Projectile projectile = projectileMoved.getProjectile();
+			//projectile.
+
+
+
+			//*****TO BE COMPLETED IN MORE DEPTH*****
+			//*****TO BE COMPLETED IN MORE DEPTH*****
+			//*****TO BE COMPLETED IN MORE DEPTH*****
+			//*****TO BE COMPLETED IN MORE DEPTH*****
+			//*****TO BE COMPLETED IN MORE DEPTH*****
+			//*****TO BE COMPLETED IN MORE DEPTH*****
+			//*****TO BE COMPLETED IN MORE DEPTH*****
+
+
+
+			send("***ProjectileMoved***", "END");
+		}
+	}
+
+	//SKIPPED: RemovedFriend
+
+	@Subscribe
+	public void onResizeableChanged(ResizeableChanged resizeableChanged) {
+		//Get ResizeableChanged. This event doesn't seem to ever be triggered.
+		if (config.ResizeableChanged()) {
+			send("***ResizeableChanged***", "START");
+
+			send("resizeableChanged.toString", resizeableChanged.toString());
+			//Output:
+
+			send("resizeableChanged.isResized", resizeableChanged.isResized());
+			//Output:
+
+			send("***ResizeableChanged***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onScriptCallbackEvent(ScriptCallbackEvent ScriptCallbackEvent) {
+		//Get ScriptCallbackEvent.
+		if (config.ScriptCallbackEvent()) {
+			/*
+			send("***ScriptCallbackEvent***", "START");
+
+			send("ScriptCallbackEvent.toString", ScriptCallbackEvent.toString());
+			//Output:
+
+			send("ScriptCallbackEvent.getEventName", ScriptCallbackEvent.getEventName());
+			//Output:
+
+			send("***ScriptCallbackEvent***", "END");
+			*/
+		}
+	}
+
+	@Subscribe
+	public void onScriptPostFired(ScriptPostFired scriptPostFired) {
+		//Get ScriptPostFired.
+		if (config.ScriptPostFired()) {
+			send("***ScriptPostFired***", "START");
+
+			send("scriptPostFired.toString", scriptPostFired.toString());
+			//Output: ScriptPostFired(scriptId=3302)
+
+			send("scriptPostFired.getScriptId", scriptPostFired.getScriptId());
+			//Output: 3302
+
+			send("***ScriptPostFired***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onScriptPreFired(ScriptPreFired scriptPreFired) {
+		//Get ScriptPreFired.
+		if (config.ScriptPreFired()) {
+			send("***ScriptPreFired***", "START");
+
+			send("scriptPreFired.toString", scriptPreFired.toString());
+			//Output: ScriptPreFired(scriptId=180, scriptEvent=null)
+
+			send("scriptPreFired.getScriptId", scriptPreFired.getScriptId());
+			//Output: 180
+
+			ScriptEvent scriptEvent = scriptPreFired.getScriptEvent();
+			if (scriptEvent != null) {
+				send("scriptEvent.getMouseX & getMouseY", scriptEvent.getMouseX() + ", " + scriptEvent.getMouseY());
+			}
+			//Output:
+
+			send("***ScriptPreFired***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onSoundEffectPlayed(SoundEffectPlayed soundEffectPlayed) {
+		//Get SoundEffectPlayed.
+		if (config.SoundEffectPlayed()) {
+			send("***SoundEffectPlayed***", "START");
+
+			send("soundEffectPlayed.toString", soundEffectPlayed.toString());
+			//Output: SoundEffectPlayed(source=null, soundId=2266, delay=0, consumed=false)
+
+			send("soundEffectPlayed.isConsumed", soundEffectPlayed.isConsumed());
+			//Output: false
+
+			send("soundEffectPlayed.getSoundId", soundEffectPlayed.getSoundId());
+			//Output: 2266
+
+			send("soundEffectPlayed.getDelay", soundEffectPlayed.getDelay());
+			//Output: 0
+
+			Actor actor = soundEffectPlayed.getSource();
+            if (actor != null) {
+                send("actor.getName", actor.getName());
+            }
+            //Output:
+
+			send("***SoundEffectPlayed***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onStatChanged(StatChanged statChanged) {
+		//Get StatChanged.
+		if (config.StatChanged()) {
+			send("***StatChanged***", "START");
+
+			send("statChanged.toString", statChanged.toString());
+			//Output: StatChanged(skill=PRAYER, xp=13085294, level=99, boostedLevel=98)
+
+			send("statChanged.getBoostedLevel", statChanged.getBoostedLevel());
+			//Output: 98
+
+			send("statChanged.getLevel", statChanged.getLevel());
+			//Output: 99
+
+			send("statChanged.getXp", statChanged.getXp());
+			//Output: 13085294
+
+			Skill skill = statChanged.getSkill();
+			send("skill.getName", skill.getName());
+			//Output: Prayer
+
+			send("skill.toString", skill.toString());
+			//Output: PRAYER
+
+			send("***StatChanged***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onUsernameChanged(UsernameChanged usernameChanged) {
+		//Get UsernameChanged.
+		if (config.UsernameChanged()) {
+			send("***UsernameChanged***", "START");
+
+			send("usernameChanged.toString", usernameChanged.toString());
+			//Output:
+
+			send("***UsernameChanged***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onVarbitChanged(VarbitChanged varbitChanged) {
+		//Get VarbitChanged.
+		if (config.VarbitChanged()) {
+			send("***VarbitChanged***", "START");
+
+			send("varbitChanged.toString", varbitChanged.toString());
+			//Output: VarbitChanged(varpId=2855, varbitId=9657, value=32)
+
+			send("varbitChanged.getValue", varbitChanged.getValue());
+			//Output: 32
+
+			send("varbitChanged.getVarbitId", varbitChanged.getVarbitId());
+			//Output: 9657
+
+			send("varbitChanged.getVarpId", varbitChanged.getVarpId());
+			//Output: 2855
+
+			send("***VarbitChanged***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onVarClientIntChanged(VarClientIntChanged varClientIntChanged) {
+		//Get VarClientIntChanged.
+		if (config.VarClientIntChanged()) {
+			send("***VarClientIntChanged***", "START");
+
+			send("varClientIntChanged.toString", varClientIntChanged.toString());
+			//Output: VarClientIntChanged(index=1112)
+
+			send("***VarClientIntChanged***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onVarClientStrChanged(VarClientStrChanged varClientStrChanged) {
+		//Get VarClientStrChanged.
+		if (config.VarClientStrChanged()) {
+			send("***VarClientStrChanged***", "START");
+
+			send("varClientStrChanged.toString", varClientStrChanged.toString());
+			//Output: VarClientStrChanged(index=359)
+
+			send("***VarClientStrChanged***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onVolumeChanged(VolumeChanged volumeChanged) {
+		//Get VolumeChanged.
+		if (config.VolumeChanged()) {
+			send("***VolumeChanged***", "START");
+
+			send("volumeChanged.toString", volumeChanged.toString());
+			//Output: VolumeChanged(type=MUSIC)
+
+			send("volumeChanged.getType().toString", volumeChanged.getType().toString());
+			//Output: MUSIC
+
+			send("volumeChanged.getType().name", volumeChanged.getType().name());
+			//Output: MUSIC
+
+			send("String.valueOf(VolumeChanged.Type.valueOf(\"AREA\"))", String.valueOf(VolumeChanged.Type.valueOf("AREA")));
+			//Output:
+			send("String.valueOf(VolumeChanged.Type.valueOf(\"EFFECTS\"))", String.valueOf(VolumeChanged.Type.valueOf("EFFECTS")));
+			//Output:
+			send("String.valueOf(VolumeChanged.Type.valueOf(\"MUSIC\"))", String.valueOf(VolumeChanged.Type.valueOf("MUSIC")));
+			//Output:
+
+			send("***VolumeChanged***", "END");
+		}
+	}
+
+	//SKIPPED: WallObjectDespawned
+
+	@Subscribe
+	public void onWallObjectSpawned(WallObjectSpawned wallObjectSpawned) {
+		//Get WallObjectSpawned.
+		if (config.WallObjectSpawned()) {
+			send("***WallObjectSpawned***", "START");
+
+			if (config.x1()) {
+				send("wallObjectSpawned.toString", wallObjectSpawned.toString());
+				//Output: WallObjectSpawned(tile=rl5@76d41c93, wallObject=lv@6a3a3400)
+			}
+
+			WallObject wallObject = wallObjectSpawned.getWallObject();
+			//if (wallObject != null) {send("wallObject", "not null");}
+
+			Tile tile = wallObjectSpawned.getTile();
+			//if (tile != null) {send("tile", "not null");}
+			if (config.x1()) {
+				send("tile.toString", tile.toString());
+				//Output: rl5@76d41c93
+
+				send("tile.getPlane", tile.getPlane());
+				//Output: 3
+
+				send("tile.getRenderLevel", tile.getRenderLevel());
+				//Output: 3
+			}
+
+			//extends TileObject
+			DecorativeObject decorativeObject = tile.getDecorativeObject();
+			if (decorativeObject != null) {
+				//send("decorativeObject", "not null");
+				if (config.x2()) {
+					send("decorativeObject.toString", decorativeObject.toString());
+					//Output: lu@568887da
+
+					send("decorativeObject.getXOffset", decorativeObject.getXOffset());
+					//Output: 16
+
+					send("decorativeObject.getYOffset", decorativeObject.getYOffset());
+					//Output: 0
+				}
+
+				Shape shape = decorativeObject.getConvexHull();
+				//if (shape != null) {send("shape", "not null");}
+				if (config.x3()) {
+					send("shape.toString", shape.toString());
+					//Output: net.runelite.api.geometry.SimplePolygon@5267d123
+				}
+
+				Rectangle rectangle = shape.getBounds();
+				if (rectangle != null) {
+					//send("rectangle", "not null");
+					if (config.x4()) {
+						send("rectangle.toString", rectangle.toString());
+						//Output: java.awt.Rectangle[x=939,y=-300,width=0,height=0]
+						send("rectangle.getHeight", rectangle.getHeight());
+						//Output: 0.0
+						send("rectangle.height", rectangle.height);
+						//Output: 0
+						send("rectangle.getWidth", rectangle.getWidth());
+						//Output: 0.0
+						send("rectangle.width", rectangle.width);
+						//Output: 0
+						send("rectangle.getX", rectangle.getX());
+						//Output: 939.0
+						send("rectangle.x", rectangle.x);
+						//Output: 939
+						send("rectangle.getY", rectangle.getY());
+						//Output: -300.0
+						send("rectangle.y", rectangle.y);
+						//Output: -300
+					}
+				}
+
+				Rectangle2D rectangle2D = shape.getBounds2D();
+				//if (rectangle2D != null) {send("rectangle2D", "not null");}
+				if (config.x5()) {
+					send("rectangle2D.toString", rectangle2D.toString());
+					//Output: java.awt.geom.Rectangle2D$Float[x=768.0,y=-299,w=0.0,h=0.0]
+					send("rectangle2D.getHeight", rectangle2D.getHeight());
+					//Output: 0.0
+					send("rectangle2D.getWidth", rectangle2D.getWidth());
+					//Output: 0.0
+					send("rectangle2D.getX", rectangle2D.getX());
+					//Output: 768.0
+					send("rectangle2D.getY", rectangle2D.getY());
+					//Output: -299.0
+				}
+
+				Renderable renderable = decorativeObject.getRenderable();
+				//if (renderable != null) {send("renderable", "not null");}
+				if (config.x6()) {
+					send("renderable.toString", renderable.toString());
+					//Output: ko@5c2efb4b
+					send("renderable.getModelHeight", renderable.getModelHeight());
+					//Output: 1000
+				}
+
+				Model model = renderable.getModel();
+				if (model != null) {
+					//send("model", "not null");
+					if (config.x7()) {
+						send("model.toString", model.toString());
+						//Output: ko@21dcc409
+						send("model.getBottomY", model.getBottomY());
+						//Output: 0
+						send("model.getBufferOffset", model.getBufferOffset());
+						//Output: 0
+						send("model.getDiameter", model.getDiameter());
+						//Output: 538
+						send("model.getRadius", model.getRadius());
+						//Output: 365
+						send("model.getSceneId", model.getSceneId());
+						//Output: 0
+						send("model.getUvBufferOffset", model.getUvBufferOffset());
+						//Output: 0
+						send("model.getXYZMag", model.getXYZMag());
+						//Output: 173
+						send("model.isClickable", model.isClickable());
+						//Output: false
+					}
+				}
+			}
+
+			//extends TileObject
+			GameObject[] gameObjects = tile.getGameObjects();
+			//if (gameObjects != null) {send("gameObjects", "not null");}
+			if (config.x8()) {
+				for (int i = 0; i < gameObjects.length; i++) {
+					send("gameObjects # " + i + ".toString", gameObjects[i].toString());
+					//Output: ll@6062f923
+				}
+			}
+
+			//I don't think I'm using this method correctly.
+			//TileItem extends Renderable
+			List<TileItem> list = tile.getGroundItems();
+			//if (list != null) {send("list", "not null");}
+			if (config.x9()) {
+				send("list.toString", list.toString());
+				//Output:
+			}
+
+			//extends TileObject
+			GroundObject groundObject = tile.getGroundObject();
+			//if (groundObject != null) {send("groundObject", "not null");}
+			if (config.x10()) {
+				send("groundObject.toString", groundObject.toString());
+				//Output: ku@1aafd7ef
+				send("groundObject.getConfig", groundObject.getConfig());
+				//Output: 342
+				send("groundObject.getId", groundObject.getId());
+				//Output: 768
+			}
+
+			//extends TileObject
+			ItemLayer itemLayer = tile.getItemLayer();
+			//if (itemLayer != null) {send("itemLayer", "not null");}
+			if (config.x11()) {
+				send("itemLayer.toString", itemLayer.toString());
+				//Output:
+				send("itemLayer.getHeight", itemLayer.getHeight());
+				//Output:
+			}
+
+			if (itemLayer != null) {
+				Renderable renderableBottom = itemLayer.getBottom();
+				Model modelBottom = renderableBottom.getModel();
+				Renderable renderableMiddle = itemLayer.getMiddle();
+				Model modelMiddle = renderableMiddle.getModel();
+				Renderable renderableTop = itemLayer.getTop();
+				Model modelTop = renderableTop.getModel();
+
+
+				if (config.x12()) {
+					send("modelBottom.toString", modelBottom.toString());
+					//Output:
+					send("modelBottom.getSceneId", modelBottom.getSceneId());
+					//Output:
+
+					send("modelMiddle.toString", modelMiddle.toString());
+					//Output:
+					send("modelMiddle.getSceneId", modelMiddle.getSceneId());
+					//Output:
+
+					send("modelTop.toString", modelTop.toString());
+					//Output:
+					send("modelTop.getSceneId", modelTop.getSceneId());
+					//Output:
+				}
+			}
+
+			LocalPoint localPoint = tile.getLocalLocation();
+			//if (localPoint != null) {send("localPoint", "not null");}
+			if (config.x13()) {
+				send("localPoint.toString", localPoint.toString());
+				//Output: LocalPoint(x=12480, y=320)
+				send("localPoint.getSceneX", localPoint.getSceneX());
+				//Output: 97
+				send("localPoint.getSceneY", localPoint.getSceneY());
+				//Output: 2
+				send("localPoint.getX", localPoint.getX());
+				//Output: 12480
+				send("localPoint.getY", localPoint.getY());
+				//Output: 320
+				send("localPoint.isInScene", localPoint.isInScene());
+				//Output: true
+			}
+
+			Point point = tile.getSceneLocation();
+			//if (point != null) {send("point", "not null");}
+			if (config.x14()) {
+				send("point.toString", point.toString());
+				//Output: Point(x=97, y=2)
+				send("point.getX", point.getX());
+				//Output: 97
+				send("point.getY", point.getY());
+				//Output: 2
+			}
+
+			SceneTileModel sceneTileModel = tile.getSceneTileModel();
+			//if (sceneTileModel != null) {send("sceneTileModel", "not null");}
+			if (config.x15()) {
+				send("sceneTileModel.toString", sceneTileModel.toString());
+				//Output:
+				send("sceneTileModel.getBufferLen", sceneTileModel.getBufferLen());
+				//Output:
+				send("sceneTileModel.getBufferOffset", sceneTileModel.getBufferOffset());
+				//Output:
+				send("sceneTileModel.getModelOverlay", sceneTileModel.getModelOverlay());
+				//Output:
+				send("sceneTileModel.getModelUnderlay", sceneTileModel.getModelUnderlay());
+				//Output:
+				send("sceneTileModel.getRotation", sceneTileModel.getRotation());
+				//Output:
+				send("sceneTileModel.getShape", sceneTileModel.getShape());
+				//Output:
+				send("sceneTileModel.getUvBufferOffset", sceneTileModel.getUvBufferOffset());
+				//Output:
+				send("sceneTileModel.isFlat", sceneTileModel.isFlat());
+				//Output:
+			}
+
+			SceneTilePaint sceneTilePaint = tile.getSceneTilePaint();
+			//if (sceneTilePaint != null) {send("sceneTilePaint", "not null");}
+			if (config.x16()) {
+				send("sceneTilePaint.toString", sceneTilePaint.toString());
+				//Output: hk@eea59d4
+				send("sceneTilePaint.getBufferLen", sceneTilePaint.getBufferLen());
+				//Output: 6
+				send("sceneTilePaint.getBufferOffset", sceneTilePaint.getBufferOffset());
+				//Output: 2392599
+				send("sceneTilePaint.getNeColor", sceneTilePaint.getNeColor());
+				//Output: 8335
+				send("sceneTilePaint.getNwColor", sceneTilePaint.getNwColor());
+				//Output: 8333
+				send("sceneTilePaint.getRBG", sceneTilePaint.getRBG());
+				//Output: 6051909
+				send("sceneTilePaint.getSeColor", sceneTilePaint.getSeColor());
+				//Output: 8330
+				send("sceneTilePaint.getSwColor", sceneTilePaint.getSwColor());
+				//Output: 8336
+				send("sceneTilePaint.getTexture", sceneTilePaint.getTexture());
+				//Output: -1
+				send("sceneTilePaint.getUvBufferOffset", sceneTilePaint.getUvBufferOffset());
+				//Output: -1
+				send("sceneTilePaint.isFlat", sceneTilePaint.isFlat());
+				//Output: true
+			}
+
+			WallObject wallObject2 = tile.getWallObject();
+			//if (wallObject2 != null) {send("wallObject2", "not null");}
+			if (config.x17()) {
+				send("wallObject2.toString", wallObject2.toString());
+				//Output: lv@4abdc1ce
+				send("wallObject2.getConfig", wallObject2.getConfig());
+				//Output: 256
+				send("wallObject2.getOrientationA", wallObject2.getOrientationA());
+				//Output: 1
+				send("wallObject2.getOrientationB", wallObject2.getOrientationB());
+				//Output: 0
+			}
+
+			WorldPoint worldPoint = tile.getWorldLocation();
+			//if (worldPoint != null) {send("worldPoint", "not null");}
+			if (config.x18()) {
+				send("worldPoint.toString", worldPoint.toString());
+				//Output: WorldPoint(x=3001, y=3178, plane=2)
+				send("worldPoint.getPlane", worldPoint.getPlane());
+				//Output: 2
+				send("worldPoint.getRegionID", worldPoint.getRegionID());
+				//Output: 11825
+				send("worldPoint.getRegionX", worldPoint.getRegionX());
+				//Output: 57
+				send("worldPoint.getRegionY", worldPoint.getRegionY());
+				//Output: 42
+				send("worldPoint.getX", worldPoint.getX());
+				//Output: 3001
+				send("worldPoint.getY", worldPoint.getY());
+				//Output: 3178
+				send("worldPoint.isInScene(client)", worldPoint.isInScene(client));
+				//Output: false
+			}
+
+			WorldArea worldArea = worldPoint.toWorldArea();
+			if (worldArea != null) {
+				//send("worldArea", "not null");
+				if (config.x19()) {
+					send("worldArea.toString", worldArea.toString());
+					//Output: net.runelite.api.coords.WorldArea@503754d
+					send("worldArea.getHeight", worldArea.getHeight());
+					//Output: 1
+					send("worldArea.getPlane", worldArea.getPlane());
+					//Output: 2
+					send("worldArea.getX", worldArea.getX());
+					//Output: 3001
+					send("worldArea.getY", worldArea.getY());
+					//Output: 3178
+				}
+			}
+
+			send("***WallObjectSpawned***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onWidgetClosed(WidgetClosed widgetClosed) {
+		//Get WidgetClosed.
+		if (config.WidgetClosed()) {
+			send("***WidgetClosed***", "START");
+
+			send("widgetClosed.toString", widgetClosed.toString());
+			//Output: WidgetClosed(groupID=160, modalMode=1, unload=false)
+
+			send("widgetClosed.getGroupId", widgetClosed.getGroupId());
+			//Output: 160
+
+			send("widgetClosed.getModalMode", widgetClosed.getModalMode());
+			//Output: 1
+
+			send("widgetClosed.isUnload", widgetClosed.isUnload());
+			//Output: false
+
+			send("***WidgetClosed***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onWidgetLoaded(WidgetLoaded widgetLoaded) {
+		//Get WidgetLoaded.
+		if (config.WidgetLoaded()) {
+			send("***WidgetLoaded***", "START");
+
+			send("widgetLoaded.toString", widgetLoaded.toString());
+			//Output: WidgetLoaded(groupID=163)
+
+			send("widgetLoaded.getGroupId", widgetLoaded.getGroupId());
+			//Output: 163
+
+			send("***WidgetLoaded***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onWorldChanged(WorldChanged worldChanged) {
+		//Get WorldChanged.
+		if (config.WorldChanged()) {
+			send("***WorldChanged***", "START");
+
+			send("worldChanged.toString", worldChanged.toString());
+			//Output:
+
+			send("***WorldChanged***", "END");
+		}
+	}
+
+	@Subscribe
+	public void onWorldListLoad(WorldListLoad worldListLoad) {
+		//Get WorldListLoad.
+		if (config.WorldListLoad()) {
+			send("***WorldListLoad***", "START");
+
+			send("worldListLoad.toString", worldListLoad.toString());
+			//Output: (This is a very, very long string.)
+
+			World[] worlds = worldListLoad.getWorlds();
+			send("worlds.length", worlds.length);
+			//Output: 231
+			send("worlds[0].toString()", worlds[0].toString());
+			//Output: ch@286cdf89
+			send("worlds[0].getActivity()", worlds[0].getActivity());
+			//Output: 500 skill total
+			send("worlds[0].getAddress()", worlds[0].getAddress());
+			//Output: oldschool168.runescape.com
+			send("worlds[0].getId()", worlds[0].getId());
+			//Output: 468
+			send("worlds[0].getIndex()", worlds[0].getIndex());
+			//Output: 0
+			send("worlds[0].getLocation()", worlds[0].getLocation());
+			//Output: 0
+			send("worlds[0].getPlayerCount()", worlds[0].getPlayerCount());
+			//Output: 74
+
+			send("***WorldListLoad***", "END");
+		}
+	}
+
+	/*@Subscribe
+	public void on(XXXTemplate xxxTemplate) {
+		//Get XXXTemplate.
+		if (config.XXXTemplate()) {
+			send("***XXXTemplate***", "START");
+
+			//Output:
+
+			send("***XXXTemplate***", "END");
+		}
+	}*/
+
+	/*@Subscribe
+	public void on(XXXTemplate xxxTemplate) {
+		//Get XXXTemplate.
+		if (config.XXXTemplate()) {
+			send("***XXXTemplate***", "START");
+
+			//Output:
+
+			send("***XXXTemplate***", "END");
+		}
+	}*/
 }
