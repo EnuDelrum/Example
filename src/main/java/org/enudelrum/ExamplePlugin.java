@@ -2,10 +2,8 @@ package org.enudelrum;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
-import java.lang.reflect.Field;
 import java.util.List;
 import javax.inject.Inject;
-import javax.naming.Name;
 
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
@@ -18,10 +16,8 @@ import net.runelite.api.events.*;
 import net.runelite.api.kit.KitType;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
-import net.runelite.client.events.PlayerLootReceived;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
-import net.runelite.client.ui.PluginPanel;
 import net.runelite.client.ui.overlay.OverlayManager;
 
 @Slf4j
@@ -29,8 +25,8 @@ import net.runelite.client.ui.overlay.OverlayManager;
 	name = "Enu's Example",
 	description = "Enu Delrum's example plugin.",
 	tags = {"config", "menu"},
-	loadWhenOutdated = true,
-	enabledByDefault = true
+	loadWhenOutdated = true
+	//enabledByDefault = true
 )
 
 public class ExamplePlugin extends Plugin
@@ -1190,24 +1186,24 @@ public class ExamplePlugin extends Plugin
 			send("***NpcChanged***", "START");
 
 			send("npcChanged.toString", npcChanged.toString());
-			//Output:
+			//Output: NpcChanged(npc=ds@3a947725, old=ho@741882c0)
 
 			NPC npc = npcChanged.getNpc();
 			send("npc.getName", npc.getName());
-			//Output:
+			//Output: Sheep
 
 			send("npc.getIndex", npc.getIndex());
-			//Output:
+			//Output: 3175
 
 			send("npc.getId", npc.getId());
-			//Output:
+			//Output: 1308
 
 			send("npc.getCombatLevel", npc.getCombatLevel());
-			//Output:
+			//Output: 0
 
 			NPCComposition npcComposition = npcChanged.getOld();
 			send("npcComposition.getName", npcComposition.getName());
-			//Output:
+			//Output: Sheep
 
 			send("***NpcChanged***", "END");
 		}
@@ -1240,18 +1236,24 @@ public class ExamplePlugin extends Plugin
 			NpcOverrides npcOverrides = npc.getChatheadOverrides();
             if (npcOverrides != null) {
                 short[] colorToReplaceWith = npcOverrides.getColorToReplaceWith();
-				for (int i = 0; i < colorToReplaceWith.length; i++) {
-					send("colorToReplaceWith # " + i, colorToReplaceWith[i]);
+				if (colorToReplaceWith != null) {
+					for (int i = 0; i < colorToReplaceWith.length; i++) {
+						send("colorToReplaceWith # " + i, colorToReplaceWith[i]);
+					}
 				}
 
 				int[] modelIds = npcOverrides.getModelIds();
-				for (int i = 0; i < modelIds.length; i++) {
-					send("modelIds # " + i, modelIds[i]);
+				if (modelIds != null) {
+					for (int i = 0; i < modelIds.length; i++) {
+						send("modelIds # " + i, modelIds[i]);
+					}
 				}
 
 				short[] textureToReplaceWith = npcOverrides.getTextureToReplaceWith();
-				for (int i = 0; i < textureToReplaceWith.length; i++) {
-					send("textureToReplaceWith # " + i, textureToReplaceWith[i]);
+				if (textureToReplaceWith != null) {
+					for (int i = 0; i < textureToReplaceWith.length; i++) {
+						send("textureToReplaceWith # " + i, textureToReplaceWith[i]);
+					}
 				}
             }
 			//Output:
@@ -1428,7 +1430,7 @@ public class ExamplePlugin extends Plugin
 			send("playerComposition.getGender", playerComposition.getGender());
 			//Output: 0
 
-			//This doesn't seem to be useful. I'm not sure sure what these IDs are, but they're not item or model IDs.
+			//This doesn't seem to be useful. I'm not sure what these IDs are, but they're not item or model IDs.
 			int[] equipmentIds = playerComposition.getEquipmentIds();
 			for (int i = 0; i < equipmentIds.length; i++) {
 				send("equipmentIds # " + i, equipmentIds[i]);
@@ -1905,147 +1907,132 @@ public class ExamplePlugin extends Plugin
 		if (config.WallObjectSpawned()) {
 			send("***WallObjectSpawned***", "START");
 
-			if (config.x1()) {
-				send("wallObjectSpawned.toString", wallObjectSpawned.toString());
-				//Output: WallObjectSpawned(tile=rl5@76d41c93, wallObject=lv@6a3a3400)
-			}
+			send("wallObjectSpawned.toString", wallObjectSpawned.toString());
+			//Output: WallObjectSpawned(tile=rl5@76d41c93, wallObject=lv@6a3a3400)
 
 			WallObject wallObject = wallObjectSpawned.getWallObject();
-			//if (wallObject != null) {send("wallObject", "not null");}
+			send("wallObject.toString", wallObject.toString());
+			//Output: lv@655ffd6e
+			send("wallObject.getConfig", wallObject.getConfig());
+			//Output: 448
+			send("wallObject.getOrientationA", wallObject.getOrientationA());
+			//Output: 8
+			send("wallObject.getOrientationB", wallObject.getOrientationB());
+			//Output: 0
 
 			Tile tile = wallObjectSpawned.getTile();
-			//if (tile != null) {send("tile", "not null");}
-			if (config.x1()) {
-				send("tile.toString", tile.toString());
-				//Output: rl5@76d41c93
-
-				send("tile.getPlane", tile.getPlane());
-				//Output: 3
-
-				send("tile.getRenderLevel", tile.getRenderLevel());
-				//Output: 3
-			}
+			send("tile.toString", tile.toString());
+			//Output: rl5@76d41c93
+			send("tile.getPlane", tile.getPlane());
+			//Output: 3
+			send("tile.getRenderLevel", tile.getRenderLevel());
+			//Output: 3
 
 			//extends TileObject
 			DecorativeObject decorativeObject = tile.getDecorativeObject();
 			if (decorativeObject != null) {
-				//send("decorativeObject", "not null");
-				if (config.x2()) {
-					send("decorativeObject.toString", decorativeObject.toString());
-					//Output: lu@568887da
-
-					send("decorativeObject.getXOffset", decorativeObject.getXOffset());
-					//Output: 16
-
-					send("decorativeObject.getYOffset", decorativeObject.getYOffset());
-					//Output: 0
-				}
+				send("decorativeObject.toString", decorativeObject.toString());
+				//Output: lu@568887da
+				send("decorativeObject.getXOffset", decorativeObject.getXOffset());
+				//Output: 16
+				send("decorativeObject.getYOffset", decorativeObject.getYOffset());
+				//Output: 0
 
 				Shape shape = decorativeObject.getConvexHull();
-				//if (shape != null) {send("shape", "not null");}
-				if (config.x3()) {
-					send("shape.toString", shape.toString());
-					//Output: net.runelite.api.geometry.SimplePolygon@5267d123
-				}
+				send("shape.toString", shape.toString());
+				//Output: net.runelite.api.geometry.SimplePolygon@5267d123
 
 				Rectangle rectangle = shape.getBounds();
 				if (rectangle != null) {
-					//send("rectangle", "not null");
-					if (config.x4()) {
-						send("rectangle.toString", rectangle.toString());
-						//Output: java.awt.Rectangle[x=939,y=-300,width=0,height=0]
-						send("rectangle.getHeight", rectangle.getHeight());
-						//Output: 0.0
-						send("rectangle.height", rectangle.height);
-						//Output: 0
-						send("rectangle.getWidth", rectangle.getWidth());
-						//Output: 0.0
-						send("rectangle.width", rectangle.width);
-						//Output: 0
-						send("rectangle.getX", rectangle.getX());
-						//Output: 939.0
-						send("rectangle.x", rectangle.x);
-						//Output: 939
-						send("rectangle.getY", rectangle.getY());
-						//Output: -300.0
-						send("rectangle.y", rectangle.y);
-						//Output: -300
-					}
+					send("rectangle.toString", rectangle.toString());
+					//Output: java.awt.Rectangle[x=939,y=-300,width=0,height=0]
+					send("rectangle.getHeight", rectangle.getHeight());
+					//Output: 0.0
+					send("rectangle.height", rectangle.height);
+					//Output: 0
+					send("rectangle.getWidth", rectangle.getWidth());
+					//Output: 0.0
+					send("rectangle.width", rectangle.width);
+					//Output: 0
+					send("rectangle.getX", rectangle.getX());
+					//Output: 939.0
+					send("rectangle.x", rectangle.x);
+					//Output: 939
+					send("rectangle.getY", rectangle.getY());
+					//Output: -300.0
+					send("rectangle.y", rectangle.y);
+					//Output: -300
 				}
 
 				Rectangle2D rectangle2D = shape.getBounds2D();
-				//if (rectangle2D != null) {send("rectangle2D", "not null");}
-				if (config.x5()) {
-					send("rectangle2D.toString", rectangle2D.toString());
-					//Output: java.awt.geom.Rectangle2D$Float[x=768.0,y=-299,w=0.0,h=0.0]
-					send("rectangle2D.getHeight", rectangle2D.getHeight());
-					//Output: 0.0
-					send("rectangle2D.getWidth", rectangle2D.getWidth());
-					//Output: 0.0
-					send("rectangle2D.getX", rectangle2D.getX());
-					//Output: 768.0
-					send("rectangle2D.getY", rectangle2D.getY());
-					//Output: -299.0
-				}
+				send("rectangle2D.toString", rectangle2D.toString());
+				//Output: java.awt.geom.Rectangle2D$Float[x=768.0,y=-299,w=0.0,h=0.0]
+				send("rectangle2D.getHeight", rectangle2D.getHeight());
+				//Output: 0.0
+				send("rectangle2D.getWidth", rectangle2D.getWidth());
+				//Output: 0.0
+				send("rectangle2D.getX", rectangle2D.getX());
+				//Output: 768.0
+				send("rectangle2D.getY", rectangle2D.getY());
+				//Output: -299.0
 
 				Renderable renderable = decorativeObject.getRenderable();
-				//if (renderable != null) {send("renderable", "not null");}
-				if (config.x6()) {
-					send("renderable.toString", renderable.toString());
-					//Output: ko@5c2efb4b
-					send("renderable.getModelHeight", renderable.getModelHeight());
-					//Output: 1000
-				}
+				send("renderable.toString", renderable.toString());
+				//Output: ko@5c2efb4b
+				send("renderable.getModelHeight", renderable.getModelHeight());
+				//Output: 1000
 
 				Model model = renderable.getModel();
 				if (model != null) {
-					//send("model", "not null");
-					if (config.x7()) {
-						send("model.toString", model.toString());
-						//Output: ko@21dcc409
-						send("model.getBottomY", model.getBottomY());
-						//Output: 0
-						send("model.getBufferOffset", model.getBufferOffset());
-						//Output: 0
-						send("model.getDiameter", model.getDiameter());
-						//Output: 538
-						send("model.getRadius", model.getRadius());
-						//Output: 365
-						send("model.getSceneId", model.getSceneId());
-						//Output: 0
-						send("model.getUvBufferOffset", model.getUvBufferOffset());
-						//Output: 0
-						send("model.getXYZMag", model.getXYZMag());
-						//Output: 173
-						send("model.isClickable", model.isClickable());
-						//Output: false
-					}
+					send("model.toString", model.toString());
+					//Output: ko@21dcc409
+					send("model.getBottomY", model.getBottomY());
+					//Output: 0
+					send("model.getBufferOffset", model.getBufferOffset());
+					//Output: 0
+					send("model.getDiameter", model.getDiameter());
+					//Output: 538
+					send("model.getRadius", model.getRadius());
+					//Output: 365
+					send("model.getSceneId", model.getSceneId());
+					//Output: 0
+					send("model.getUvBufferOffset", model.getUvBufferOffset());
+					//Output: 0
+					send("model.getXYZMag", model.getXYZMag());
+					//Output: 173
+					send("model.isClickable", model.isClickable());
+					//Output: false
 				}
 			}
 
 			//extends TileObject
 			GameObject[] gameObjects = tile.getGameObjects();
-			//if (gameObjects != null) {send("gameObjects", "not null");}
-			if (config.x8()) {
+			// gameObjects is always a size of 5 (0 to 4).
+			// I've only seen 1 to 4 be null.
+			// 0 is usually null too.
+			if (gameObjects[0] != null) {
 				for (int i = 0; i < gameObjects.length; i++) {
-					send("gameObjects # " + i + ".toString", gameObjects[i].toString());
-					//Output: ll@6062f923
+					if (gameObjects[i] != null) {
+						send("gameObjects # " + i + ".getId", gameObjects[i].getId());
+						//Output: 14839
+					}
 				}
 			}
 
-			//I don't think I'm using this method correctly.
 			//TileItem extends Renderable
 			List<TileItem> list = tile.getGroundItems();
-			//if (list != null) {send("list", "not null");}
-			if (config.x9()) {
-				send("list.toString", list.toString());
-				//Output:
+			if (list != null) {
+				for (int i = 0; i < list.size(); i++) {
+					send("list.get(" + i + ").toString", list.get(i).toString());
+					//Output: el@7166cb8d
+					send("list.get(" + i + ").getId", list.get(i).getId());
+					//Output: 1511
+				}
 			}
 
 			//extends TileObject
 			GroundObject groundObject = tile.getGroundObject();
-			//if (groundObject != null) {send("groundObject", "not null");}
-			if (config.x10()) {
+			if (groundObject != null) {
 				send("groundObject.toString", groundObject.toString());
 				//Output: ku@1aafd7ef
 				send("groundObject.getConfig", groundObject.getConfig());
@@ -2056,12 +2043,11 @@ public class ExamplePlugin extends Plugin
 
 			//extends TileObject
 			ItemLayer itemLayer = tile.getItemLayer();
-			//if (itemLayer != null) {send("itemLayer", "not null");}
-			if (config.x11()) {
+			if (itemLayer != null) {
 				send("itemLayer.toString", itemLayer.toString());
-				//Output:
+				//Output: kz@140cee1f
 				send("itemLayer.getHeight", itemLayer.getHeight());
-				//Output:
+				//Output: 79
 			}
 
 			if (itemLayer != null) {
@@ -2072,79 +2058,74 @@ public class ExamplePlugin extends Plugin
 				Renderable renderableTop = itemLayer.getTop();
 				Model modelTop = renderableTop.getModel();
 
+				send("modelBottom.toString", modelBottom.toString());
+				//Output: ko@612623b3
+				send("modelBottom.getSceneId", modelBottom.getSceneId());
+				//Output: 0
+				send("modelBottom.isClickable", modelBottom.isClickable());
+				//Output: true
 
-				if (config.x12()) {
-					send("modelBottom.toString", modelBottom.toString());
-					//Output:
-					send("modelBottom.getSceneId", modelBottom.getSceneId());
-					//Output:
+				send("modelMiddle.toString", modelMiddle.toString());
+				//Output: ko@4f9285cd
+				send("modelMiddle.getSceneId", modelMiddle.getSceneId());
+				//Output: 0
+				send("modelMiddle.isClickable", modelMiddle.isClickable());
+				//Output: true
 
-					send("modelMiddle.toString", modelMiddle.toString());
-					//Output:
-					send("modelMiddle.getSceneId", modelMiddle.getSceneId());
-					//Output:
-
-					send("modelTop.toString", modelTop.toString());
-					//Output:
-					send("modelTop.getSceneId", modelTop.getSceneId());
-					//Output:
-				}
-			}
-
-			LocalPoint localPoint = tile.getLocalLocation();
-			//if (localPoint != null) {send("localPoint", "not null");}
-			if (config.x13()) {
-				send("localPoint.toString", localPoint.toString());
-				//Output: LocalPoint(x=12480, y=320)
-				send("localPoint.getSceneX", localPoint.getSceneX());
-				//Output: 97
-				send("localPoint.getSceneY", localPoint.getSceneY());
-				//Output: 2
-				send("localPoint.getX", localPoint.getX());
-				//Output: 12480
-				send("localPoint.getY", localPoint.getY());
-				//Output: 320
-				send("localPoint.isInScene", localPoint.isInScene());
+				send("modelTop.toString", modelTop.toString());
+				//Output: ko@2b472d55
+				send("modelTop.getSceneId", modelTop.getSceneId());
+				//Output: 0
+				send("modelTop.isClickable", modelTop.isClickable());
 				//Output: true
 			}
 
+			LocalPoint localPoint = tile.getLocalLocation();
+			send("localPoint.toString", localPoint.toString());
+			//Output: LocalPoint(x=12480, y=320)
+			send("localPoint.getSceneX", localPoint.getSceneX());
+			//Output: 97
+			send("localPoint.getSceneY", localPoint.getSceneY());
+			//Output: 2
+			send("localPoint.getX", localPoint.getX());
+			//Output: 12480
+			send("localPoint.getY", localPoint.getY());
+			//Output: 320
+			send("localPoint.isInScene", localPoint.isInScene());
+			//Output: true
+
 			Point point = tile.getSceneLocation();
-			//if (point != null) {send("point", "not null");}
-			if (config.x14()) {
-				send("point.toString", point.toString());
-				//Output: Point(x=97, y=2)
-				send("point.getX", point.getX());
-				//Output: 97
-				send("point.getY", point.getY());
-				//Output: 2
-			}
+			send("point.toString", point.toString());
+			//Output: Point(x=97, y=2)
+			send("point.getX", point.getX());
+			//Output: 97
+			send("point.getY", point.getY());
+			//Output: 2
 
 			SceneTileModel sceneTileModel = tile.getSceneTileModel();
-			//if (sceneTileModel != null) {send("sceneTileModel", "not null");}
-			if (config.x15()) {
+			if (sceneTileModel != null) {
 				send("sceneTileModel.toString", sceneTileModel.toString());
-				//Output:
+				//Output: kc@7f9c3543
 				send("sceneTileModel.getBufferLen", sceneTileModel.getBufferLen());
-				//Output:
+				//Output: 0
 				send("sceneTileModel.getBufferOffset", sceneTileModel.getBufferOffset());
-				//Output:
+				//Output: 3065691
 				send("sceneTileModel.getModelOverlay", sceneTileModel.getModelOverlay());
-				//Output:
+				//Output: 6447705
 				send("sceneTileModel.getModelUnderlay", sceneTileModel.getModelUnderlay());
-				//Output:
+				//Output: 0
 				send("sceneTileModel.getRotation", sceneTileModel.getRotation());
-				//Output:
+				//Output: 0
 				send("sceneTileModel.getShape", sceneTileModel.getShape());
-				//Output:
+				//Output: 2
 				send("sceneTileModel.getUvBufferOffset", sceneTileModel.getUvBufferOffset());
-				//Output:
+				//Output: -1
 				send("sceneTileModel.isFlat", sceneTileModel.isFlat());
-				//Output:
+				//Output: false
 			}
 
 			SceneTilePaint sceneTilePaint = tile.getSceneTilePaint();
-			//if (sceneTilePaint != null) {send("sceneTilePaint", "not null");}
-			if (config.x16()) {
+			if (sceneTilePaint != null) {
 				send("sceneTilePaint.toString", sceneTilePaint.toString());
 				//Output: hk@eea59d4
 				send("sceneTilePaint.getBufferLen", sceneTilePaint.getBufferLen());
@@ -2170,55 +2151,44 @@ public class ExamplePlugin extends Plugin
 			}
 
 			WallObject wallObject2 = tile.getWallObject();
-			//if (wallObject2 != null) {send("wallObject2", "not null");}
-			if (config.x17()) {
-				send("wallObject2.toString", wallObject2.toString());
-				//Output: lv@4abdc1ce
-				send("wallObject2.getConfig", wallObject2.getConfig());
-				//Output: 256
-				send("wallObject2.getOrientationA", wallObject2.getOrientationA());
-				//Output: 1
-				send("wallObject2.getOrientationB", wallObject2.getOrientationB());
-				//Output: 0
-			}
+			send("wallObject2.toString", wallObject2.toString());
+			//Output: lv@4abdc1ce
+			send("wallObject2.getConfig", wallObject2.getConfig());
+			//Output: 256
+			send("wallObject2.getOrientationA", wallObject2.getOrientationA());
+			//Output: 1
+			send("wallObject2.getOrientationB", wallObject2.getOrientationB());
+			//Output: 0
 
 			WorldPoint worldPoint = tile.getWorldLocation();
-			//if (worldPoint != null) {send("worldPoint", "not null");}
-			if (config.x18()) {
-				send("worldPoint.toString", worldPoint.toString());
-				//Output: WorldPoint(x=3001, y=3178, plane=2)
-				send("worldPoint.getPlane", worldPoint.getPlane());
-				//Output: 2
-				send("worldPoint.getRegionID", worldPoint.getRegionID());
-				//Output: 11825
-				send("worldPoint.getRegionX", worldPoint.getRegionX());
-				//Output: 57
-				send("worldPoint.getRegionY", worldPoint.getRegionY());
-				//Output: 42
-				send("worldPoint.getX", worldPoint.getX());
-				//Output: 3001
-				send("worldPoint.getY", worldPoint.getY());
-				//Output: 3178
-				send("worldPoint.isInScene(client)", worldPoint.isInScene(client));
-				//Output: false
-			}
+			send("worldPoint.toString", worldPoint.toString());
+			//Output: WorldPoint(x=3001, y=3178, plane=2)
+			send("worldPoint.getPlane", worldPoint.getPlane());
+			//Output: 2
+			send("worldPoint.getRegionID", worldPoint.getRegionID());
+			//Output: 11825
+			send("worldPoint.getRegionX", worldPoint.getRegionX());
+			//Output: 57
+			send("worldPoint.getRegionY", worldPoint.getRegionY());
+			//Output: 42
+			send("worldPoint.getX", worldPoint.getX());
+			//Output: 3001
+			send("worldPoint.getY", worldPoint.getY());
+			//Output: 3178
+			send("worldPoint.isInScene(client)", worldPoint.isInScene(client));
+			//Output: false
 
 			WorldArea worldArea = worldPoint.toWorldArea();
-			if (worldArea != null) {
-				//send("worldArea", "not null");
-				if (config.x19()) {
-					send("worldArea.toString", worldArea.toString());
-					//Output: net.runelite.api.coords.WorldArea@503754d
-					send("worldArea.getHeight", worldArea.getHeight());
-					//Output: 1
-					send("worldArea.getPlane", worldArea.getPlane());
-					//Output: 2
-					send("worldArea.getX", worldArea.getX());
-					//Output: 3001
-					send("worldArea.getY", worldArea.getY());
-					//Output: 3178
-				}
-			}
+			send("worldArea.toString", worldArea.toString());
+			//Output: net.runelite.api.coords.WorldArea@503754d
+			send("worldArea.getHeight", worldArea.getHeight());
+			//Output: 1
+			send("worldArea.getPlane", worldArea.getPlane());
+			//Output: 2
+			send("worldArea.getX", worldArea.getX());
+			//Output: 3001
+			send("worldArea.getY", worldArea.getY());
+			//Output: 3178
 
 			send("***WallObjectSpawned***", "END");
 		}

@@ -236,7 +236,7 @@ public interface ExampleConfig extends Config
 
 	@ConfigItem(
 			keyName = "NpcChanged",
-			name = "*NpcChanged (Not Triggered)",
+			name = "NpcChanged",
 			description = "Output NpcChanged"
 	)
 	default boolean NpcChanged() { return false; }
@@ -410,7 +410,7 @@ public interface ExampleConfig extends Config
 
 	@ConfigItem(
 			keyName = "WallObjectSpawned",
-			name = "***WallObjectSpawned",
+			name = "WallObjectSpawned",
 			description = "Output WallObjectSpawned"
 	)
 	default boolean WallObjectSpawned() { return false; }
@@ -442,139 +442,6 @@ public interface ExampleConfig extends Config
 			description = "Output WorldListLoad"
 	)
 	default boolean WorldListLoad() { return false; }
-
-	@ConfigItem(
-			keyName = "1",
-			name = "****1",
-			description = "Output 1"
-	)
-	default boolean x1() { return false; }
-
-	@ConfigItem(
-			keyName = "2",
-			name = "****2",
-			description = "Output 2"
-	)
-	default boolean x2() { return false; }
-
-	@ConfigItem(
-			keyName = "3",
-			name = "****3",
-			description = "Output 3"
-	)
-	default boolean x3() { return false; }
-
-	@ConfigItem(
-			keyName = "4",
-			name = "****4",
-			description = "Output 4"
-	)
-	default boolean x4() { return false; }
-
-	@ConfigItem(
-			keyName = "5",
-			name = "****5",
-			description = "Output 5"
-	)
-	default boolean x5() { return false; }
-
-	@ConfigItem(
-			keyName = "6",
-			name = "****6",
-			description = "Output 6"
-	)
-	default boolean x6() { return false; }
-
-	@ConfigItem(
-			keyName = "7",
-			name = "****7",
-			description = "Output 7"
-	)
-	default boolean x7() { return false; }
-
-	@ConfigItem(
-			keyName = "8",
-			name = "****8",
-			description = "Output 8"
-	)
-	default boolean x8() { return false; }
-
-	@ConfigItem(
-			keyName = "9",
-			name = "****9",
-			description = "Output 9"
-	)
-	default boolean x9() { return false; }
-
-	@ConfigItem(
-			keyName = "10",
-			name = "****10",
-			description = "Output 10"
-	)
-	default boolean x10() { return false; }
-
-	@ConfigItem(
-			keyName = "11",
-			name = "****11",
-			description = "Output 11"
-	)
-	default boolean x11() { return false; }
-
-	@ConfigItem(
-			keyName = "12",
-			name = "****12",
-			description = "Output 12"
-	)
-	default boolean x12() { return false; }
-
-	@ConfigItem(
-			keyName = "13",
-			name = "****13",
-			description = "Output 13"
-	)
-	default boolean x13() { return false; }
-
-	@ConfigItem(
-			keyName = "14",
-			name = "****14",
-			description = "Output 14"
-	)
-	default boolean x14() { return false; }
-
-	@ConfigItem(
-			keyName = "15",
-			name = "****15",
-			description = "Output 15"
-	)
-	default boolean x15() { return false; }
-
-	@ConfigItem(
-			keyName = "16",
-			name = "****16",
-			description = "Output 16"
-	)
-	default boolean x16() { return false; }
-
-	@ConfigItem(
-			keyName = "17",
-			name = "****17",
-			description = "Output 17"
-	)
-	default boolean x17() { return false; }
-
-	@ConfigItem(
-			keyName = "18",
-			name = "****18",
-			description = "Output 18"
-	)
-	default boolean x18() { return false; }
-
-	@ConfigItem(
-			keyName = "19",
-			name = "****19",
-			description = "Output 19"
-	)
-	default boolean x19() { return false; }
 
 	/*@ConfigItem(
 			keyName = "XXXTemplate",
